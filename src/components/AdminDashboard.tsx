@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { toast } from '@/hooks/use-toast';
 import { 
@@ -18,7 +18,8 @@ import {
   Download,
   CheckCircle,
   XCircle,
-  QrCode
+  QrCode,
+  Eye
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -201,8 +202,45 @@ const AdminDashboard = () => {
                           <TableCell className="font-medium">{cartinha.remetente}</TableCell>
                           <TableCell>{cartinha.destinatario}</TableCell>
                           <TableCell>{cartinha.serie}</TableCell>
-                          <TableCell className="max-w-xs truncate" title={cartinha.mensagem}>
-                            {cartinha.mensagem}
+                          <TableCell className="max-w-xs">
+                            <div className="flex items-center gap-2">
+                              <span className="truncate" title={cartinha.mensagem}>
+                                {cartinha.mensagem.length > 50 
+                                  ? `${cartinha.mensagem.substring(0, 50)}...` 
+                                  : cartinha.mensagem
+                                }
+                              </span>
+                              {cartinha.mensagem.length > 50 && (
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="h-6 w-6 p-0 text-pink-600 hover:text-pink-800 hover:bg-pink-50"
+                                    >
+                                      <Eye className="w-4 h-4" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-md">
+                                    <DialogHeader>
+                                      <DialogTitle className="text-pink-800">
+                                        Mensagem Completa
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="mt-4">
+                                      <p className="text-gray-700 leading-relaxed">
+                                        {cartinha.mensagem}
+                                      </p>
+                                      <div className="mt-4 pt-4 border-t border-pink-soft text-sm text-gray-500">
+                                        <p><strong>De:</strong> {cartinha.remetente}</p>
+                                        <p><strong>Para:</strong> {cartinha.destinatario}</p>
+                                        <p><strong>Série:</strong> {cartinha.serie}</p>
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell>
                             {cartinha.combo === 'combo1' ? 'Clássico' : 'Premium'}
