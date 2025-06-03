@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCorreioStore, verificarPalavrasOfensivas } from '@/hooks/useCorreioStore';
 import { toast } from '@/hooks/use-toast';
-import { ArrowRight, AlertTriangle, XCircle } from 'lucide-react';
+import { ArrowRight, AlertTriangle, XCircle, Heart, Mail, Sparkles } from 'lucide-react';
 
 const CartinhaForm = () => {
   const navigate = useNavigate();
@@ -80,18 +79,42 @@ const CartinhaForm = () => {
   const hasOffensiveWords = currentCartinha.mensagem && verificarPalavrasOfensivas(currentCartinha.mensagem);
 
   return (
-    <div className="min-h-screen bg-gradient-pink py-8">
-      <div className="container mx-auto px-4 max-w-2xl">
-        <Card className="shadow-pink border-pink-soft">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl text-gradient-pink mb-2">
-              Criar sua Cartinha 💌
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 py-8 px-4">
+      <div className="container mx-auto max-w-3xl">
+        {/* Beautiful Header Section */}
+        <div className="text-center mb-8 space-y-4">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="relative">
+              <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                <Mail className="w-8 h-8 text-white" />
+                <Heart className="w-4 h-4 text-pink-200 absolute -top-1 -right-1" />
+              </div>
+              <Sparkles className="w-6 h-6 text-yellow-400 absolute -top-2 -left-2 animate-pulse" />
+            </div>
+          </div>
+          
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            Correio Elegante
+          </h1>
+          
+          <p className="text-xl text-gray-600 font-medium">
+            Espalhe amor e carinho pela escola! 💌
+          </p>
+          
+          <div className="w-24 h-1 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full mx-auto"></div>
+        </div>
+
+        <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="text-center bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-t-lg">
+            <CardTitle className="text-2xl text-gray-800 mb-2">
+              Criar sua Cartinha Especial ✨
             </CardTitle>
             <p className="text-gray-600">
               Envie uma mensagem carinhosa para alguém especial!
             </p>
           </CardHeader>
-          <CardContent className="space-y-6">
+          
+          <CardContent className="space-y-6 p-8">
             <div className="space-y-2">
               <Label htmlFor="remetente" className="text-pink-700 font-medium">
                 Seu Nome (Remetente)
@@ -198,24 +221,41 @@ const CartinhaForm = () => {
               </div>
             </div>
 
-            <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
-              <h4 className="font-medium text-pink-800 mb-2">📝 Observações Importantes:</h4>
-              <ul className="text-sm text-pink-700 space-y-1">
-                <li>✅ Use mensagens carinhosas, divertidas e amigáveis</li>
-                <li>🚫 Proibido qualquer tipo de ofensa, palavrão ou conteúdo impróprio</li>
-                <li>💖 Espalhe amor e positividade!</li>
-                <li>🎯 Seja criativo e genuíno em suas palavras</li>
+            <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-6 rounded-xl border border-pink-200/50">
+              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <Heart className="w-5 h-5 text-pink-500" />
+                Dicas para uma cartinha perfeita:
+              </h4>
+              <ul className="text-sm text-gray-700 space-y-2">
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-pink-400 rounded-full"></span>
+                  Use mensagens carinhosas, divertidas e amigáveis
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-purple-400 rounded-full"></span>
+                  Proibido qualquer tipo de ofensa ou conteúdo impróprio
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-indigo-400 rounded-full"></span>
+                  Espalhe amor e positividade!
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-pink-400 rounded-full"></span>
+                  Seja criativo e genuíno em suas palavras
+                </li>
               </ul>
             </div>
 
             <Button 
               onClick={handleSubmit}
-              className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 text-lg shadow-pink"
+              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-4 text-lg font-semibold shadow-lg transform transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               size="lg"
               disabled={hasOffensiveWords}
             >
-              Avançar para Combos
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <span className="flex items-center gap-2">
+                Avançar para Combos
+                <ArrowRight className="w-5 h-5" />
+              </span>
             </Button>
           </CardContent>
         </Card>
