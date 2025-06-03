@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { toast } from '@/hooks/use-toast';
 import { 
@@ -226,12 +226,15 @@ const AdminDashboard = () => {
                                       <DialogTitle className="text-pink-800">
                                         Mensagem Completa
                                       </DialogTitle>
+                                      <DialogDescription>
+                                        Visualize a mensagem completa da cartinha enviada.
+                                      </DialogDescription>
                                     </DialogHeader>
                                     <div className="mt-4">
-                                      <p className="text-gray-700 leading-relaxed">
+                                      <p className="text-gray-700 leading-relaxed break-words">
                                         {cartinha.mensagem}
                                       </p>
-                                      <div className="mt-4 pt-4 border-t border-pink-soft text-sm text-gray-500">
+                                      <div className="mt-4 pt-4 border-t border-pink-200 text-sm text-gray-500">
                                         <p><strong>De:</strong> {cartinha.remetente}</p>
                                         <p><strong>Para:</strong> {cartinha.destinatario}</p>
                                         <p><strong>Série:</strong> {cartinha.serie}</p>
