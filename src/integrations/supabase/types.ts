@@ -9,7 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cartinhas: {
+        Row: {
+          combo: string
+          created_at: string
+          data_envio: string
+          destinatario: string
+          id: string
+          mensagem: string
+          remetente: string
+          serie: string
+          status: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          combo: string
+          created_at?: string
+          data_envio?: string
+          destinatario: string
+          id?: string
+          mensagem: string
+          remetente: string
+          serie: string
+          status?: string
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          combo?: string
+          created_at?: string
+          data_envio?: string
+          destinatario?: string
+          id?: string
+          mensagem?: string
+          remetente?: string
+          serie?: string
+          status?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

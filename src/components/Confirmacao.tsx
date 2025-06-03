@@ -3,13 +3,14 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
+import { useCreateCartinha } from '@/hooks/useSupabaseCartinhas';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Heart, Home, QrCode } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 
 const Confirmacao = () => {
   const navigate = useNavigate();
-  const { currentCartinha, addCartinha, clearCurrentCartinha, adminConfig } = useCorreioStore();
+  const { currentCartinha, clearCurrentCartinha, adminConfig } = useCorreioStore();
+  const createCartinha = useCreateCartinha();
 
   useEffect(() => {
     if (!currentCartinha.remetente || !currentCartinha.combo) {
@@ -17,21 +18,17 @@ const Confirmacao = () => {
       return;
     }
 
-    // Salvar a cartinha no banco de dados local
-    addCartinha({
+    // Salvar a cartinha no banco de dados do Supabase
+    const cartinhaData = {
       remetente: currentCartinha.remetente!,
       destinatario: currentCartinha.destinatario!,
       serie: currentCartinha.serie!,
       mensagem: currentCartinha.mensagem!,
       combo: currentCartinha.combo!,
       valor: currentCartinha.valor!,
-      status: 'pendente'
-    });
+    };
 
-    toast({
-      title: "Cartinha enviada com sucesso! 💌",
-      description: "Seu pedido foi registrado e será entregue no dia do evento.",
-    });
+    createCartinha.mutate(cartinhaData);
   }, []);
 
   const handleNovaCartinha = () => {

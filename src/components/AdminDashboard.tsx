@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
+import { useCartinhas, useCartinhasStats, useUpdateCartinhaStatus } from '@/hooks/useSupabaseCartinhas';
 import { toast } from '@/hooks/use-toast';
 import { 
   LogOut, 
@@ -24,12 +25,14 @@ import {
 
 const AdminDashboard = () => {
   const { 
-    cartinhas, 
     adminConfig, 
-    updateCartinhaStatus, 
     updateAdminConfig, 
     logout 
   } = useCorreioStore();
+  
+  const { data: cartinhas = [], isLoading } = useCartinhas();
+  const { data: stats } = useCartinhasStats();
+  const updateStatus = useUpdateCartinhaStatus();
   
   const [config, setConfig] = useState(adminConfig);
 
@@ -43,7 +46,7 @@ const AdminDashboard = () => {
 
   const toggleStatus = (id: string, currentStatus: 'pendente' | 'pago') => {
     const newStatus = currentStatus === 'pendente' ? 'pago' : 'pendente';
-    updateCartinhaStatus(id, newStatus);
+    updateStatus.mutate({ id, status: newStatus });
     toast({
       title: `Status atualizado!`,
       description: `Cartinha marcada como ${newStatus}.`,
@@ -58,9 +61,9 @@ const AdminDashboard = () => {
       cartinha.serie,
       cartinha.mensagem,
       cartinha.combo === 'combo1' ? 'Clássico' : 'Premium',
-      `R$ ${cartinha.valor.toFixed(2)}`,
+      `R$ ${Number(cartinha.valor).toFixed(2)}`,
       cartinha.status,
-      cartinha.dataEnvio
+      new Date(cartinha.data_envio).toLocaleDateString('pt-BR')
     ]);
 
     const csvContent = [headers, ...rows]
@@ -79,12 +82,16 @@ const AdminDashboard = () => {
     });
   };
 
-  const stats = {
-    total: cartinhas.length,
-    pagas: cartinhas.filter(c => c.status === 'pago').length,
-    pendentes: cartinhas.filter(c => c.status === 'pendente').length,
-    receita: cartinhas.filter(c => c.status === 'pago').reduce((sum, c) => sum + c.valor, 0)
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-pink flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-pink-700">Carregando dados...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-pink">
@@ -119,7 +126,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-pink-600 font-medium">Total de Cartinhas</p>
-                      <p className="text-3xl font-bold text-pink-800">{stats.total}</p>
+                      <p className="text-3xl font-bold text-pink-800">{stats?.total || 0}</p>
                     </div>
                     <Mail className="w-8 h-8 text-pink-500" />
                   </div>
@@ -131,7 +138,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-green-600 font-medium">Pagas</p>
-                      <p className="text-3xl font-bold text-green-800">{stats.pagas}</p>
+                      <p className="text-3xl font-bold text-green-800">{stats?.pagas || 0}</p>
                     </div>
                     <CheckCircle className="w-8 h-8 text-green-500" />
                   </div>
@@ -143,7 +150,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-orange-600 font-medium">Pendentes</p>
-                      <p className="text-3xl font-bold text-orange-800">{stats.pendentes}</p>
+                      <p className="text-3xl font-bold text-orange-800">{stats?.pendentes || 0}</p>
                     </div>
                     <XCircle className="w-8 h-8 text-orange-500" />
                   </div>
@@ -156,7 +163,7 @@ const AdminDashboard = () => {
                     <div>
                       <p className="text-pink-600 font-medium">Receita</p>
                       <p className="text-3xl font-bold text-pink-800">
-                        R$ {stats.receita.toFixed(2)}
+                        R$ {(stats?.receita || 0).toFixed(2)}
                       </p>
                     </div>
                     <DollarSign className="w-8 h-8 text-pink-500" />
@@ -248,7 +255,7 @@ const AdminDashboard = () => {
                           <TableCell>
                             {cartinha.combo === 'combo1' ? 'Clássico' : 'Premium'}
                           </TableCell>
-                          <TableCell>R$ {cartinha.valor.toFixed(2)}</TableCell>
+                          <TableCell>R$ {Number(cartinha.valor).toFixed(2)}</TableCell>
                           <TableCell>
                             <Badge 
                               variant={cartinha.status === 'pago' ? 'default' : 'secondary'}
@@ -257,7 +264,9 @@ const AdminDashboard = () => {
                               {cartinha.status}
                             </Badge>
                           </TableCell>
-                          <TableCell>{cartinha.dataEnvio}</TableCell>
+                          <TableCell>
+                            {new Date(cartinha.data_envio).toLocaleDateString('pt-BR')}
+                          </TableCell>
                           <TableCell>
                             <Button
                               size="sm"
