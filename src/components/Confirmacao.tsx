@@ -73,27 +73,29 @@ const Confirmacao = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <strong className="text-pink-700">Remetente:</strong>
-                    <p>{currentCartinha.remetente}</p>
+                    <p className="break-words">{currentCartinha.remetente}</p>
                   </div>
                   <div>
                     <strong className="text-pink-700">Destinatário:</strong>
-                    <p>{currentCartinha.destinatario}</p>
+                    <p className="break-words">{currentCartinha.destinatario}</p>
                   </div>
                   <div>
                     <strong className="text-pink-700">Série:</strong>
-                    <p>{currentCartinha.serie}</p>
+                    <p className="break-words">{currentCartinha.serie}</p>
                   </div>
                   <div>
                     <strong className="text-pink-700">Combo:</strong>
-                    <p>{selectedCombo?.name}</p>
+                    <p className="break-words">{selectedCombo?.name}</p>
                   </div>
                 </div>
                 
                 <div>
                   <strong className="text-pink-700">Mensagem:</strong>
-                  <p className="mt-1 p-3 bg-white rounded border border-pink-200 italic">
-                    "{currentCartinha.mensagem}"
-                  </p>
+                  <div className="mt-1 p-3 bg-white rounded border border-pink-200">
+                    <p className="italic text-gray-700 break-words overflow-wrap-anywhere whitespace-pre-wrap">
+                      "{currentCartinha.mensagem}"
+                    </p>
+                  </div>
                 </div>
                 
                 <div className="text-center pt-2">
@@ -115,8 +117,12 @@ const Confirmacao = () => {
                   alt="QR Code para pagamento" 
                   className="mx-auto max-w-48 max-h-48 border border-gray-200 rounded"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextElementSibling!.style.display = 'block';
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.style.display = 'none';
+                    const nextElement = target.nextElementSibling as HTMLElement;
+                    if (nextElement) {
+                      nextElement.style.display = 'block';
+                    }
                   }}
                 />
                 <div style={{display: 'none'}} className="text-gray-500 py-8">
