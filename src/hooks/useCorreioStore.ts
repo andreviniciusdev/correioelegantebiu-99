@@ -37,16 +37,47 @@ interface CorreioState {
 }
 
 const palavrasOfensivas = [
+  // Palavrões e termos ofensivos
+  'caralho', 'porra', 'merda', 'bosta', 'cacete', 'puta', 'viado', 'bicha',
+  'cu', 'cuzão', 'fdp', 'filho da puta', 'desgraça', 'desgraçado',
+  'pqp', 'que porra', 'vai se foder', 'vai tomar no cu', 'corno',
+  
+  // Insultos pessoais
   'idiota', 'burro', 'otário', 'feio', 'estúpido', 'imbecil', 'babaca', 
   'trouxa', 'lerdo', 'tapado', 'mongolóide', 'retardado', 'cretino',
-  'asno', 'jumento', 'besta', 'animal', 'inútil', 'lixo', 'merda',
+  'asno', 'jumento', 'besta', 'animal', 'inútil', 'lixo',
   'porcaria', 'nojento', 'fedorento', 'sujo', 'porco', 'gorda',
-  'magra', 'feia', 'horrível', 'nojenta', 'ridícula', 'patética'
+  'magra', 'feia', 'horrível', 'nojenta', 'ridícula', 'patética',
+  
+  // Termos depreciativos
+  'vaca', 'cachorra', 'cadela', 'piranha', 'vagabunda', 'safada',
+  'sem vergonha', 'pirralho', 'moleque', 'fedelho', 'peste',
+  
+  // Abreviações e gírias ofensivas
+  'vsf', 'vtmnc', 'tnc', 'tmj', 'mlk', 'fdm', 'cdf'
 ];
 
 export const verificarPalavrasOfensivas = (texto: string): boolean => {
-  const textoLimpo = texto.toLowerCase().replace(/[^a-záàâãéèêíïóôõöúçñ\s]/gi, '');
-  return palavrasOfensivas.some(palavra => textoLimpo.includes(palavra));
+  // Remove acentos e caracteres especiais, mantém apenas letras e espaços
+  const textoLimpo = texto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+    .replace(/[^a-z\s]/g, ' ') // Remove pontuação e números
+    .replace(/\s+/g, ' ') // Remove espaços extras
+    .trim();
+  
+  // Verifica se alguma palavra ofensiva está presente no texto
+  return palavrasOfensivas.some(palavra => {
+    const palavraLimpa = palavra
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+    
+    // Verifica se a palavra aparece como palavra completa ou parte de uma palavra
+    const regex = new RegExp(`\\b${palavraLimpa.replace(/\s+/g, '\\s+')}\\b`, 'i');
+    return regex.test(textoLimpo) || textoLimpo.includes(palavraLimpa);
+  });
 };
 
 export const useCorreioStore = create<CorreioState>()(

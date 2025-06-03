@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCorreioStore, verificarPalavrasOfensivas } from '@/hooks/useCorreioStore';
 import { toast } from '@/hooks/use-toast';
-import { ArrowRight, AlertTriangle } from 'lucide-react';
+import { ArrowRight, AlertTriangle, XCircle } from 'lucide-react';
 
 const CartinhaForm = () => {
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ const CartinhaForm = () => {
     if (!currentCartinha.mensagem?.trim()) {
       newErrors.mensagem = 'Mensagem é obrigatória';
     } else if (verificarPalavrasOfensivas(currentCartinha.mensagem)) {
-      newErrors.mensagem = 'Mensagem contém palavras impróprias. Por favor, use apenas palavras carinhosas e respeitosas.';
+      newErrors.mensagem = '⚠️ Sua mensagem contém palavras impróprias. Por favor, reescreva usando apenas palavras carinhosas e respeitosas. Lembre-se: espalhe amor e positividade! 💖';
     }
 
     setErrors(newErrors);
@@ -52,11 +52,20 @@ const CartinhaForm = () => {
     if (validateForm()) {
       navigate('/combos');
     } else {
-      toast({
-        title: "Erro no formulário",
-        description: "Por favor, corrija os campos destacados.",
-        variant: "destructive"
-      });
+      // Toast específico para palavras ofensivas
+      if (currentCartinha.mensagem && verificarPalavrasOfensivas(currentCartinha.mensagem)) {
+        toast({
+          title: "🚫 Linguagem inadequada detectada",
+          description: "Sua mensagem contém palavras impróprias. Por favor, reescreva com carinho e respeito.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Erro no formulário",
+          description: "Por favor, corrija os campos destacados.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -66,6 +75,9 @@ const CartinhaForm = () => {
     '3º Ano A', '3º Ano B', '3º Ano C',
     '6º Ano', '7º Ano', '8º Ano', '9º Ano'
   ];
+
+  // Verificação em tempo real se há palavras ofensivas
+  const hasOffensiveWords = currentCartinha.mensagem && verificarPalavrasOfensivas(currentCartinha.mensagem);
 
   return (
     <div className="min-h-screen bg-gradient-pink py-8">
@@ -154,9 +166,25 @@ const CartinhaForm = () => {
                 placeholder="Escreva uma mensagem carinhosa, divertida e amigável..."
                 value={currentCartinha.mensagem || ''}
                 onChange={(e) => handleInputChange('mensagem', e.target.value)}
-                className={`min-h-32 border-pink-soft focus:ring-pink-500 resize-none ${errors.mensagem ? 'border-red-500' : ''}`}
+                className={`min-h-32 border-pink-soft focus:ring-pink-500 resize-none ${
+                  errors.mensagem ? 'border-red-500' : hasOffensiveWords ? 'border-red-400' : ''
+                }`}
                 maxLength={500}
               />
+              
+              {/* Aviso em tempo real para palavras ofensivas */}
+              {hasOffensiveWords && !errors.mensagem && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-600 text-sm flex items-start gap-2">
+                    <XCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Atenção:</strong> Sua mensagem contém palavras inadequadas. 
+                      Por favor, reescreva usando apenas palavras carinhosas e positivas! 💖
+                    </span>
+                  </p>
+                </div>
+              )}
+              
               <div className="flex justify-between items-start">
                 <div className="text-sm text-gray-500">
                   {currentCartinha.mensagem?.length || 0}/500 caracteres
@@ -174,8 +202,9 @@ const CartinhaForm = () => {
               <h4 className="font-medium text-pink-800 mb-2">📝 Observações Importantes:</h4>
               <ul className="text-sm text-pink-700 space-y-1">
                 <li>✅ Use mensagens carinhosas, divertidas e amigáveis</li>
-                <li>🚫 Proibido qualquer tipo de ofensa ou conteúdo impróprio</li>
+                <li>🚫 Proibido qualquer tipo de ofensa, palavrão ou conteúdo impróprio</li>
                 <li>💖 Espalhe amor e positividade!</li>
+                <li>🎯 Seja criativo e genuíno em suas palavras</li>
               </ul>
             </div>
 
@@ -183,6 +212,7 @@ const CartinhaForm = () => {
               onClick={handleSubmit}
               className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 text-lg shadow-pink"
               size="lg"
+              disabled={hasOffensiveWords}
             >
               Avançar para Combos
               <ArrowRight className="w-5 h-5 ml-2" />
