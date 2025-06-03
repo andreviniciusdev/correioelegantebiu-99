@@ -20,7 +20,10 @@ import {
   CheckCircle,
   XCircle,
   QrCode,
-  Eye
+  Eye,
+  TrendingUp,
+  Calendar,
+  Sparkles
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -39,7 +42,7 @@ const AdminDashboard = () => {
   const handleUpdateConfig = () => {
     updateAdminConfig(config);
     toast({
-      title: "Configurações atualizadas!",
+      title: "Configurações atualizadas! ✨",
       description: "As alterações foram salvas com sucesso.",
     });
   };
@@ -48,7 +51,7 @@ const AdminDashboard = () => {
     const newStatus = currentStatus === 'pendente' ? 'pago' : 'pendente';
     updateStatus.mutate({ id, status: newStatus });
     toast({
-      title: `Status atualizado!`,
+      title: `Status atualizado! 🎉`,
       description: `Cartinha marcada como ${newStatus}.`,
     });
   };
@@ -77,33 +80,41 @@ const AdminDashboard = () => {
     link.click();
     
     toast({
-      title: "Exportação concluída!",
+      title: "Exportação concluída! 📊",
       description: "O arquivo CSV foi baixado com sucesso.",
     });
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-pink flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-elegant flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500 mx-auto"></div>
-          <p className="mt-4 text-pink-700">Carregando dados...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-pink-500 border-t-transparent mx-auto shadow-elegant"></div>
+          <div className="mt-6 space-y-2">
+            <p className="text-xl font-semibold text-gradient-pink">Carregando dados...</p>
+            <p className="text-pink-600/70">Aguarde um momento</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-pink">
-      <header className="bg-white/80 backdrop-blur-sm border-b border-pink-soft p-4">
+    <div className="min-h-screen bg-gradient-elegant">
+      <header className="glass-effect border-b border-pink-200/50 p-6">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gradient-pink">
-            Painel Administrativo
-          </h1>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center shadow-elegant">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-gradient-pink">
+              Painel Administrativo
+            </h1>
+          </div>
           <Button 
             onClick={logout}
             variant="outline" 
-            className="border-pink-soft text-pink-700 hover:bg-pink-50"
+            className="border-pink-300 text-pink-700 hover:bg-pink-50 hover:border-pink-400 shadow-soft"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sair
@@ -111,62 +122,80 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-6 py-8">
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="cartinhas">Cartinhas</TabsTrigger>
-            <TabsTrigger value="configuracoes">Configurações</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/70 backdrop-blur-sm border-0 shadow-soft p-1 rounded-xl">
+            <TabsTrigger value="dashboard" className="rounded-lg font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="cartinhas" className="rounded-lg font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
+              Cartinhas
+            </TabsTrigger>
+            <TabsTrigger value="configuracoes" className="rounded-lg font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
+              Configurações
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <Card className="shadow-pink border-pink-soft">
+              <Card className="shadow-elegant border-0 glass-effect card-hover">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-pink-600 font-medium">Total de Cartinhas</p>
-                      <p className="text-3xl font-bold text-pink-800">{stats?.total || 0}</p>
+                      <p className="text-pink-600 font-semibold text-sm">Total de Cartinhas</p>
+                      <p className="text-3xl font-bold text-gradient-pink">{stats?.total || 0}</p>
+                      <p className="text-xs text-pink-500 mt-1">📧 Mensagens enviadas</p>
                     </div>
-                    <Mail className="w-8 h-8 text-pink-500" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl flex items-center justify-center">
+                      <Mail className="w-6 h-6 text-pink-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-pink border-pink-soft">
+              <Card className="shadow-elegant border-0 glass-effect card-hover">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-green-600 font-medium">Pagas</p>
-                      <p className="text-3xl font-bold text-green-800">{stats?.pagas || 0}</p>
+                      <p className="text-green-600 font-semibold text-sm">Pagas</p>
+                      <p className="text-3xl font-bold text-green-700">{stats?.pagas || 0}</p>
+                      <p className="text-xs text-green-500 mt-1">✅ Confirmadas</p>
                     </div>
-                    <CheckCircle className="w-8 h-8 text-green-500" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-pink border-pink-soft">
+              <Card className="shadow-elegant border-0 glass-effect card-hover">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-orange-600 font-medium">Pendentes</p>
-                      <p className="text-3xl font-bold text-orange-800">{stats?.pendentes || 0}</p>
+                      <p className="text-orange-600 font-semibold text-sm">Pendentes</p>
+                      <p className="text-3xl font-bold text-orange-700">{stats?.pendentes || 0}</p>
+                      <p className="text-xs text-orange-500 mt-1">⏳ Aguardando</p>
                     </div>
-                    <XCircle className="w-8 h-8 text-orange-500" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-orange-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-pink border-pink-soft">
+              <Card className="shadow-elegant border-0 glass-effect card-hover">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-pink-600 font-medium">Receita</p>
-                      <p className="text-3xl font-bold text-pink-800">
+                      <p className="text-purple-600 font-semibold text-sm">Receita</p>
+                      <p className="text-3xl font-bold text-gradient-purple">
                         R$ {(stats?.receita || 0).toFixed(2)}
                       </p>
+                      <p className="text-xs text-purple-500 mt-1">💰 Total arrecadado</p>
                     </div>
-                    <DollarSign className="w-8 h-8 text-pink-500" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-purple-600" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -174,13 +203,16 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="cartinhas">
-            <Card className="shadow-pink border-pink-soft">
+            <Card className="shadow-elegant border-0 glass-effect">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="text-pink-800">Todas as Cartinhas</CardTitle>
+                  <CardTitle className="text-gradient-pink flex items-center gap-2">
+                    <Mail className="w-5 h-5" />
+                    Todas as Cartinhas
+                  </CardTitle>
                   <Button 
                     onClick={exportToCsv}
-                    className="bg-pink-500 hover:bg-pink-600 text-white"
+                    className="btn-elegant text-white border-0 shadow-soft"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Exportar CSV
@@ -191,21 +223,21 @@ const AdminDashboard = () => {
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Remetente</TableHead>
-                        <TableHead>Destinatário</TableHead>
-                        <TableHead>Série</TableHead>
-                        <TableHead>Mensagem</TableHead>
-                        <TableHead>Combo</TableHead>
-                        <TableHead>Valor</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead>Ações</TableHead>
+                      <TableRow className="border-pink-200/50">
+                        <TableHead className="font-semibold text-pink-700">Remetente</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Destinatário</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Série</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Mensagem</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Combo</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Valor</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Status</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Data</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {cartinhas.map((cartinha) => (
-                        <TableRow key={cartinha.id}>
+                        <TableRow key={cartinha.id} className="border-pink-100/50 hover:bg-pink-50/30">
                           <TableCell className="font-medium">{cartinha.remetente}</TableCell>
                           <TableCell>{cartinha.destinatario}</TableCell>
                           <TableCell>{cartinha.serie}</TableCell>
@@ -283,8 +315,10 @@ const AdminDashboard = () => {
                   </Table>
                   
                   {cartinhas.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      Nenhuma cartinha enviada ainda.
+                    <div className="text-center py-12">
+                      <Mail className="w-16 h-16 text-pink-300 mx-auto mb-4" />
+                      <p className="text-lg font-semibold text-pink-600 mb-2">Nenhuma cartinha enviada ainda</p>
+                      <p className="text-pink-500">As cartinhas aparecerão aqui quando forem enviadas</p>
                     </div>
                   )}
                 </div>
@@ -294,16 +328,16 @@ const AdminDashboard = () => {
 
           <TabsContent value="configuracoes">
             <div className="grid gap-6">
-              <Card className="shadow-pink border-pink-soft">
+              <Card className="shadow-elegant border-0 glass-effect">
                 <CardHeader>
-                  <CardTitle className="text-pink-800 flex items-center gap-2">
+                  <CardTitle className="text-gradient-pink flex items-center gap-2">
                     <QrCode className="w-5 h-5" />
                     Configuração de QR Codes
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="qrCodeCombo1" className="text-pink-700 font-medium">
+                <CardContent className="space-y-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="qrCodeCombo1" className="text-pink-700 font-semibold">
                       QR Code - Combo Clássico (R$ 2,50)
                     </Label>
                     <Input
@@ -311,12 +345,12 @@ const AdminDashboard = () => {
                       placeholder="URL da imagem do QR Code..."
                       value={config.qrCodeCombo1}
                       onChange={(e) => setConfig(prev => ({ ...prev, qrCodeCombo1: e.target.value }))}
-                      className="border-pink-soft focus:ring-pink-500"
+                      className="input-elegant border-0 rounded-xl"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="qrCodeCombo2" className="text-pink-700 font-medium">
+                  <div className="space-y-3">
+                    <Label htmlFor="qrCodeCombo2" className="text-pink-700 font-semibold">
                       QR Code - Combo Premium (R$ 3,00)
                     </Label>
                     <Input
@@ -324,22 +358,22 @@ const AdminDashboard = () => {
                       placeholder="URL da imagem do QR Code..."
                       value={config.qrCodeCombo2}
                       onChange={(e) => setConfig(prev => ({ ...prev, qrCodeCombo2: e.target.value }))}
-                      className="border-pink-soft focus:ring-pink-500"
+                      className="input-elegant border-0 rounded-xl"
                     />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-pink border-pink-soft">
+              <Card className="shadow-elegant border-0 glass-effect">
                 <CardHeader>
-                  <CardTitle className="text-pink-800 flex items-center gap-2">
+                  <CardTitle className="text-gradient-pink flex items-center gap-2">
                     <Settings className="w-5 h-5" />
                     Configurações de Segurança
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="senha" className="text-pink-700 font-medium">
+                  <div className="space-y-3">
+                    <Label htmlFor="senha" className="text-pink-700 font-semibold">
                       Senha do Painel Administrativo
                     </Label>
                     <Input
@@ -348,7 +382,7 @@ const AdminDashboard = () => {
                       placeholder="Nova senha..."
                       value={config.senha}
                       onChange={(e) => setConfig(prev => ({ ...prev, senha: e.target.value }))}
-                      className="border-pink-soft focus:ring-pink-500"
+                      className="input-elegant border-0 rounded-xl"
                     />
                   </div>
                 </CardContent>
@@ -356,9 +390,10 @@ const AdminDashboard = () => {
 
               <Button 
                 onClick={handleUpdateConfig}
-                className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 shadow-pink"
+                className="w-full btn-elegant text-white py-4 text-lg font-semibold rounded-xl border-0 shadow-elegant"
                 size="lg"
               >
+                <Settings className="w-5 h-5 mr-2" />
                 Salvar Configurações
               </Button>
             </div>
