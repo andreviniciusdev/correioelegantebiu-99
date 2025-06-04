@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,13 +21,13 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { setAuthenticated } = useCorreioStore();
+  const { logout } = useCorreioStore();
   const { data: cartinhas = [], isLoading } = useCartinhas();
   const { data: stats } = useCartinhasStats();
   const updateStatus = useUpdateCartinhaStatus();
 
   const handleLogout = () => {
-    setAuthenticated(false);
+    logout();
   };
 
   const toggleStatus = (id: string, currentStatus: 'pendente' | 'pago') => {

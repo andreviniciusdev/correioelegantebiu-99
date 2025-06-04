@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,11 +14,10 @@ interface AdminLoginProps {
 
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [password, setPassword] = useState('');
-  const { setAuthenticated } = useCorreioStore();
+  const { authenticate } = useCorreioStore();
 
   const handleLogin = () => {
-    if (password === ADMIN_CONFIG.PASSWORD) {
-      setAuthenticated(true);
+    if (authenticate(password)) {
       toast({
         title: "Login realizado com sucesso! ✨",
         description: "Bem-vindo ao painel administrativo.",
