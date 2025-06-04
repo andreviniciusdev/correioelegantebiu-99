@@ -318,29 +318,39 @@ const AdminDashboard = () => {
                                         Comprovantes enviados para esta cartinha.
                                       </DialogDescription>
                                     </DialogHeader>
-                                    <div className="mt-4 space-y-4">
+                                    <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
                                       {comprovantesDaCartinha.map((comprovante, index) => (
                                         <div key={comprovante.id} className="border border-pink-200 rounded-lg p-4">
                                           <div className="flex items-center justify-between mb-2">
                                             <span className="text-sm font-medium text-gray-700">
-                                              Comprovante {index + 1}
+                                              {comprovante.nome_arquivo}
                                             </span>
                                             <span className="text-xs text-gray-500">
-                                              {new Date(comprovante.created_at).toLocaleDateString('pt-BR')}
+                                              {new Date(comprovante.created_at).toLocaleDateString('pt-BR')} às {new Date(comprovante.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                           </div>
-                                          <img 
-                                            src={comprovante.arquivo_url} 
-                                            alt={comprovante.nome_arquivo}
-                                            className="w-full max-h-64 object-contain border border-gray-200 rounded"
-                                            onError={(e) => {
-                                              const target = e.currentTarget as HTMLImageElement;
-                                              target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSIjOUNBM0FGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCI+SW1hZ2VtPC90ZXh0Pgo8L3N2Zz4=';
-                                            }}
-                                          />
-                                          <p className="text-xs text-gray-500 mt-2">
-                                            {comprovante.nome_arquivo}
-                                          </p>
+                                          <div className="relative">
+                                            <img 
+                                              src={comprovante.arquivo_url} 
+                                              alt={comprovante.nome_arquivo}
+                                              className="w-full max-h-64 object-contain border border-gray-200 rounded bg-gray-50"
+                                              loading="lazy"
+                                              onError={(e) => {
+                                                console.error('Erro ao carregar imagem:', comprovante.arquivo_url);
+                                                const target = e.currentTarget as HTMLImageElement;
+                                                target.style.display = 'none';
+                                                const errorDiv = document.createElement('div');
+                                                errorDiv.className = 'w-full h-32 flex items-center justify-center bg-gray-100 border border-gray-200 rounded text-gray-500 text-sm';
+                                                errorDiv.textContent = 'Erro ao carregar imagem';
+                                                target.parentNode?.insertBefore(errorDiv, target);
+                                              }}
+                                            />
+                                          </div>
+                                          {comprovante.tamanho_arquivo && (
+                                            <p className="text-xs text-gray-500 mt-2">
+                                              Tamanho: {(comprovante.tamanho_arquivo / 1024 / 1024).toFixed(2)} MB
+                                            </p>
+                                          )}
                                         </div>
                                       ))}
                                     </div>
