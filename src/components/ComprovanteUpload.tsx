@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Upload, Check, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { useCreateCartinha } from '@/hooks/useSupabaseCartinhas';
+import { useCreateCartinha, useUploadComprovante } from '@/hooks/useSupabaseCartinhas';
 import { CreateCartinhaData } from '@/hooks/useSupabaseCartinhas';
 
 interface ComprovanteUploadProps {
@@ -16,8 +16,9 @@ interface ComprovanteUploadProps {
 
 const ComprovanteUpload = ({ cartinhaId, onUploadSuccess, cartinhaData }: ComprovanteUploadProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [cartinhaCriada, setCartinhaCriada] = useState<string | null>(null);
   const createCartinha = useCreateCartinha();
+  const uploadComprovante = useUploadComprovante();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -49,44 +50,54 @@ const ComprovanteUpload = ({ cartinhaId, onUploadSuccess, cartinhaData }: Compro
   const handleUpload = async () => {
     if (!selectedFile || !cartinhaData) return;
     
-    setIsUploading(true);
-    
     try {
-      // Primeiro criar a cartinha no banco com os dados do comprovante
-      const cartinhaComComprovante = {
+      // Primeiro criar a cartinha no banco sem o comprovante
+      const cartinhaSemComprovante = {
         ...cartinhaData,
-        comprovante_nome: selectedFile.name,
-        comprovante_tamanho: selectedFile.size,
-        comprovante_tipo: selectedFile.type,
       };
 
-      createCartinha.mutate(cartinhaComComprovante, {
+      console.log('Criando cartinha sem comprovante:', cartinhaSemComprovante);
+
+      createCartinha.mutate(cartinhaSemComprovante, {
         onSuccess: (cartinhaCriada) => {
-          toast({
-            title: "Comprovante enviado! 📎",
-            description: "Seu comprovante foi recebido e o pedido foi enviado aos administradores.",
-          });
-          setSelectedFile(null);
-          onUploadSuccess?.();
+          console.log('Cartinha criada com sucesso:', cartinhaCriada);
+          setCartinhaCriada(cartinhaCriada.id);
+          
+          // Agora fazer upload do comprovante
+          console.log('Iniciando upload do comprovante para cartinha:', cartinhaCriada.id);
+          uploadComprovante.mutate(
+            { file: selectedFile, cartinhaId: cartinhaCriada.id },
+            {
+              onSuccess: (cartinhaAtualizada) => {
+                console.log('Upload do comprovante concluído:', cartinhaAtualizada);
+                setSelectedFile(null);
+                onUploadSuccess?.();
+              },
+              onError: (error) => {
+                console.error('Erro no upload do comprovante:', error);
+              }
+            }
+          );
         },
-        onError: () => {
-          setIsUploading(false);
+        onError: (error) => {
+          console.error('Erro ao criar cartinha:', error);
         }
       });
     } catch (error) {
-      console.error('Erro ao enviar comprovante:', error);
+      console.error('Erro geral no processo:', error);
       toast({
-        title: "Erro ao enviar comprovante",
+        title: "Erro ao enviar",
         description: "Tente novamente em alguns instantes.",
         variant: "destructive",
       });
-      setIsUploading(false);
     }
   };
 
   const removeFile = () => {
     setSelectedFile(null);
   };
+
+  const isLoading = createCartinha.isPending || uploadComprovante.isPending;
 
   return (
     <Card className="border-pink-200">
@@ -108,6 +119,7 @@ const ComprovanteUpload = ({ cartinhaId, onUploadSuccess, cartinhaData }: Compro
               accept="image/*"
               onChange={handleFileSelect}
               className="border-pink-300 focus:border-pink-500"
+              disabled={isLoading}
             />
             <p className="text-xs text-gray-500 text-center">
               Formatos aceitos: JPG, PNG, GIF (máximo 5MB)
@@ -127,7 +139,7 @@ const ComprovanteUpload = ({ cartinhaId, onUploadSuccess, cartinhaData }: Compro
                 variant="ghost"
                 size="sm"
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                disabled={isUploading}
+                disabled={isLoading}
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -135,13 +147,14 @@ const ComprovanteUpload = ({ cartinhaId, onUploadSuccess, cartinhaData }: Compro
             
             <Button
               onClick={handleUpload}
-              disabled={isUploading || createCartinha.isPending}
+              disabled={isLoading}
               className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+              size="lg"
             >
-              {isUploading || createCartinha.isPending ? (
+              {isLoading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Enviando...
+                  {createCartinha.isPending ? 'Criando pedido...' : 'Enviando comprovante...'}
                 </>
               ) : (
                 <>
