@@ -1,7 +1,5 @@
-import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,41 +8,27 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useCartinhas, useCartinhasStats, useUpdateCartinhaStatus } from '@/hooks/useSupabaseCartinhas';
 import { toast } from '@/hooks/use-toast';
+import { ADMIN_CONFIG } from '@/config/adminConfig';
 import {
   LogOut,
-  Users,
   Mail,
-  DollarSign,
-  Settings,
   Download,
   CheckCircle,
-  XCircle,
   QrCode,
   Eye,
   TrendingUp,
   Calendar,
-  Sparkles
+  Info
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const {
-    adminConfig,
-    updateAdminConfig,
-    logout
-  } = useCorreioStore();
-
+  const { setAuthenticated } = useCorreioStore();
   const { data: cartinhas = [], isLoading } = useCartinhas();
   const { data: stats } = useCartinhasStats();
   const updateStatus = useUpdateCartinhaStatus();
 
-  const [config, setConfig] = useState(adminConfig);
-
-  const handleUpdateConfig = () => {
-    updateAdminConfig(config);
-    toast({
-      title: "Configurações atualizadas! ✨",
-      description: "As alterações foram salvas com sucesso.",
-    });
+  const handleLogout = () => {
+    setAuthenticated(false);
   };
 
   const toggleStatus = (id: string, currentStatus: 'pendente' | 'pago') => {
@@ -116,7 +100,7 @@ const AdminDashboard = () => {
             </h1>
           </div>
           <Button
-            onClick={logout}
+            onClick={handleLogout}
             variant="outline"
             className="border-pink-300 text-pink-700 hover:bg-pink-50 hover:border-pink-400 shadow-soft"
           >
@@ -139,7 +123,7 @@ const AdminDashboard = () => {
               Cartinhas
             </TabsTrigger>
             <TabsTrigger value="configuracoes" className="rounded-lg font-semibold data-[state=active]:bg-pink-500 data-[state=active]:text-white">
-              Configurações
+              QR Codes
             </TabsTrigger>
           </TabsList>
 
@@ -339,70 +323,73 @@ const AdminDashboard = () => {
                 <CardHeader>
                   <CardTitle className="text-gradient-pink flex items-center gap-2">
                     <QrCode className="w-5 h-5" />
-                    Configuração de QR Codes
+                    QR Codes de Pagamento
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-3">
-                    <Label htmlFor="qrCodeCombo1" className="text-pink-700 font-semibold">
-                      QR Code - Combo Clássico (R$ 2,50)
-                    </Label>
-                    <Input
-                      id="qrCodeCombo1"
-                      placeholder="URL da imagem do QR Code..."
-                      value={config.qrCodeCombo1}
-                      onChange={(e) => setConfig(prev => ({ ...prev, qrCodeCombo1: e.target.value }))}
-                      className="input-elegant border-0 rounded-xl"
-                    />
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* QR Code Combo 1 */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-pink-700">
+                        Combo Clássico - R$ {ADMIN_CONFIG.COMBO_PRICES.combo1.toFixed(2)}
+                      </h3>
+                      <div className="bg-white/50 p-4 rounded-xl border border-pink-200/50">
+                        <img
+                          src={ADMIN_CONFIG.QR_CODES.combo1}
+                          alt="QR Code Combo Clássico"
+                          className="w-full max-w-48 mx-auto rounded-lg shadow-soft"
+                          onError={(e) => {
+                            e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSIjOUNBM0FGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCI+UVIgQ29kZTwvdGV4dD4KPC9zdmc+';
+                          }}
+                        />
+                        <p className="text-center text-sm text-pink-600 mt-2">
+                          Para alterar, substitua a imagem em: <br />
+                          <code className="bg-pink-100 px-2 py-1 rounded text-xs">
+                            public/qr-combo1.png
+                          </code>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* QR Code Combo 2 */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-pink-700">
+                        Combo Premium - R$ {ADMIN_CONFIG.COMBO_PRICES.combo2.toFixed(2)}
+                      </h3>
+                      <div className="bg-white/50 p-4 rounded-xl border border-pink-200/50">
+                        <img
+                          src={ADMIN_CONFIG.QR_CODES.combo2}
+                          alt="QR Code Combo Premium"
+                          className="w-full max-w-48 mx-auto rounded-lg shadow-soft"
+                          onError={(e) => {
+                            e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSIjOUNBM0FGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCI+UVIgQ29kZTwvdGV4dD4KPC9zdmc+';
+                          }}
+                        />
+                        <p className="text-center text-sm text-pink-600 mt-2">
+                          Para alterar, substitua a imagem em: <br />
+                          <code className="bg-pink-100 px-2 py-1 rounded text-xs">
+                            public/qr-combo2.png
+                          </code>
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <Label htmlFor="qrCodeCombo2" className="text-pink-700 font-semibold">
-                      QR Code - Combo Premium (R$ 3,00)
-                    </Label>
-                    <Input
-                      id="qrCodeCombo2"
-                      placeholder="URL da imagem do QR Code..."
-                      value={config.qrCodeCombo2}
-                      onChange={(e) => setConfig(prev => ({ ...prev, qrCodeCombo2: e.target.value }))}
-                      className="input-elegant border-0 rounded-xl"
-                    />
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <div className="flex items-start gap-3">
+                      <Info className="w-5 h-5 text-blue-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-blue-800 mb-1">Como alterar as configurações:</h4>
+                        <ul className="text-sm text-blue-700 space-y-1">
+                          <li>• <strong>QR Codes:</strong> Substitua as imagens <code>qr-combo1.png</code> e <code>qr-combo2.png</code> na pasta <code>public/</code></li>
+                          <li>• <strong>Senha:</strong> Edite a constante <code>PASSWORD</code> no arquivo <code>src/config/adminConfig.ts</code></li>
+                          <li>• <strong>Preços:</strong> Altere os valores em <code>COMBO_PRICES</code> no mesmo arquivo</li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-
-              <Card className="shadow-elegant border-0 glass-effect">
-                <CardHeader>
-                  <CardTitle className="text-gradient-pink flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    Configurações de Segurança
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <Label htmlFor="senha" className="text-pink-700 font-semibold">
-                      Senha do Painel Administrativo
-                    </Label>
-                    <Input
-                      id="senha"
-                      type="password"
-                      placeholder="Nova senha..."
-                      value={config.senha}
-                      onChange={(e) => setConfig(prev => ({ ...prev, senha: e.target.value }))}
-                      className="input-elegant border-0 rounded-xl"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Button
-                onClick={handleUpdateConfig}
-                className="w-full btn-elegant text-white py-4 text-lg font-semibold rounded-xl border-0 shadow-elegant"
-                size="lg"
-              >
-                <Settings className="w-5 h-5 mr-2" />
-                Salvar Configurações
-              </Button>
             </div>
           </TabsContent>
         </Tabs>

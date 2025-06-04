@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { toast } from '@/hooks/use-toast';
-import { Lock, Shield, Sparkles, KeyRound } from 'lucide-react';
+import { Lock, KeyRound } from 'lucide-react';
+import { ADMIN_CONFIG } from '@/config/adminConfig';
 
 interface AdminLoginProps {
   onLogin: () => void;
@@ -14,10 +15,11 @@ interface AdminLoginProps {
 
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [password, setPassword] = useState('');
-  const { authenticate } = useCorreioStore();
+  const { setAuthenticated } = useCorreioStore();
 
   const handleLogin = () => {
-    if (authenticate(password)) {
+    if (password === ADMIN_CONFIG.PASSWORD) {
+      setAuthenticated(true);
       toast({
         title: "Login realizado com sucesso! ✨",
         description: "Bem-vindo ao painel administrativo.",
@@ -80,7 +82,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="pl-4 py-3 text-lg input-elegant border-0 rounded-xl"
+                className="pl-12 py-3 text-lg input-elegant border-0 rounded-xl"
               />
             </div>
           </div>
