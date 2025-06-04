@@ -55,8 +55,8 @@ const Confirmacao = () => {
     try {
       await navigator.clipboard.writeText(pixKey);
       toast({
-        title: "Chave PIX copiada!",
-        description: "A chave PIX foi copiada para a área de transferência.",
+        title: "Link de pagamento copiado!",
+        description: "O link de pagamento foi copiado para a área de transferência.",
       });
     } catch (error) {
       toast({
@@ -156,7 +156,7 @@ const Confirmacao = () => {
                 {selectedCombo.pixKey && (
                   <div className="pt-4">
                     <p className="text-sm text-gray-600 mb-3">
-                      Ou copie a chave PIX abaixo:
+                      Ou copie o link de pagamento abaixo:
                     </p>
                     <div className="bg-gray-50 p-3 rounded border mb-3">
                       <code className="text-sm text-gray-700 break-all">
@@ -169,7 +169,7 @@ const Confirmacao = () => {
                       className="border-pink-300 text-pink-600 hover:bg-pink-50"
                     >
                       <Copy className="w-4 h-4 mr-2" />
-                      Copiar Chave PIX
+                      Copiar Link de Pagamento
                     </Button>
                   </div>
                 )}

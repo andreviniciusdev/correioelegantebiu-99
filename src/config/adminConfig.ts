@@ -12,8 +12,8 @@ export const ADMIN_CONFIG = {
   
   // Chaves PIX para pagamento
   PIX_KEYS: {
-    combo1: 'sua-chave-pix-combo1@email.com', // Chave PIX para Combo Clássico
-    combo2: 'sua-chave-pix-combo2@email.com', // Chave PIX para Combo Premium
+    combo1: '00020101021126330014br.gov.bcb.pix01111273526147652040000530398654042.505802BR5921ELOANY B L DOS SANTOS6006MACEIO62070503***6304E6D1', // Chave PIX para Combo Clássico
+    combo2: '00020101021126330014br.gov.bcb.pix01111273526147652040000530398654043.005802BR5921ELOANY B L DOS SANTOS6006MACEIO62070503***6304B7D2', // Chave PIX para Combo Premium
   },
   
   // Valores dos combos
