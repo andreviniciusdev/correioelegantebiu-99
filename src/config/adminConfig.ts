@@ -10,10 +10,10 @@ export const ADMIN_CONFIG = {
     combo2: '/qr-combo2.png', // QR Code para Combo Premium (R$ 3,00)
   },
   
-  // Links de pagamento direto
-  PAYMENT_LINKS: {
-    combo1: 'https://pix.example.com/combo1', // Link para pagamento do Combo Clássico
-    combo2: 'https://pix.example.com/combo2', // Link para pagamento do Combo Premium
+  // Chaves PIX para pagamento
+  PIX_KEYS: {
+    combo1: 'sua-chave-pix-combo1@email.com', // Chave PIX para Combo Clássico
+    combo2: 'sua-chave-pix-combo2@email.com', // Chave PIX para Combo Premium
   },
   
   // Valores dos combos

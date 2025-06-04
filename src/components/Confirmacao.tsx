@@ -1,12 +1,14 @@
+
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useCreateCartinha } from '@/hooks/useSupabaseCartinhas';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Heart, Home, QrCode, ExternalLink } from 'lucide-react';
+import { CheckCircle, Heart, Home, QrCode, Copy } from 'lucide-react';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
 import ComprovanteUpload from './ComprovanteUpload';
+import { toast } from '@/hooks/use-toast';
 
 const Confirmacao = () => {
   const navigate = useNavigate();
@@ -41,16 +43,32 @@ const Confirmacao = () => {
     combo1: { 
       name: 'Combo Clássico', 
       qrCode: ADMIN_CONFIG.QR_CODES.combo1,
-      paymentLink: ADMIN_CONFIG.PAYMENT_LINKS.combo1
+      pixKey: ADMIN_CONFIG.PIX_KEYS.combo1
     },
     combo2: { 
       name: 'Combo Premium', 
       qrCode: ADMIN_CONFIG.QR_CODES.combo2,
-      paymentLink: ADMIN_CONFIG.PAYMENT_LINKS.combo2
+      pixKey: ADMIN_CONFIG.PIX_KEYS.combo2
     }
   };
 
   const selectedCombo = currentCartinha.combo ? combos[currentCartinha.combo] : null;
+
+  const handleCopyPixKey = async (pixKey: string) => {
+    try {
+      await navigator.clipboard.writeText(pixKey);
+      toast({
+        title: "Chave PIX copiada!",
+        description: "A chave PIX foi copiada para a área de transferência.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao copiar",
+        description: "Não foi possível copiar a chave PIX. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleComprovanteUpload = (file: File) => {
     console.log('Comprovante enviado:', file.name);
@@ -140,18 +158,23 @@ const Confirmacao = () => {
                   QR Code não disponível
                 </div>
                 
-                {selectedCombo.paymentLink && (
+                {selectedCombo.pixKey && (
                   <div className="pt-4">
                     <p className="text-sm text-gray-600 mb-3">
-                      Ou clique no link abaixo para pagar direto do celular:
+                      Ou copie a chave PIX abaixo:
                     </p>
+                    <div className="bg-gray-50 p-3 rounded border mb-3">
+                      <code className="text-sm text-gray-700 break-all">
+                        {selectedCombo.pixKey}
+                      </code>
+                    </div>
                     <Button
-                      onClick={() => window.open(selectedCombo.paymentLink, '_blank')}
+                      onClick={() => handleCopyPixKey(selectedCombo.pixKey)}
                       variant="outline"
                       className="border-pink-300 text-pink-600 hover:bg-pink-50"
                     >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Abrir Link de Pagamento
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copiar Chave PIX
                     </Button>
                   </div>
                 )}
