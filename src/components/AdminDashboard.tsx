@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -88,6 +89,8 @@ const AdminDashboard = () => {
       </div>
     );
   }
+
+  console.log('Comprovantes carregados:', comprovantes);
 
   return (
     <div className="min-h-screen bg-gradient-elegant">
@@ -236,6 +239,8 @@ const AdminDashboard = () => {
                     <TableBody>
                       {cartinhas.map((cartinha) => {
                         const comprovantesDaCartinha = getComprovantesForCartinha(cartinha.id);
+                        console.log(`Comprovantes para cartinha ${cartinha.id}:`, comprovantesDaCartinha);
+                        
                         return (
                           <TableRow key={cartinha.id} className="border-pink-100/50 hover:bg-pink-50/30">
                             <TableCell className="font-medium">{cartinha.remetente}</TableCell>
@@ -319,40 +324,47 @@ const AdminDashboard = () => {
                                       </DialogDescription>
                                     </DialogHeader>
                                     <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
-                                      {comprovantesDaCartinha.map((comprovante, index) => (
-                                        <div key={comprovante.id} className="border border-pink-200 rounded-lg p-4">
-                                          <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm font-medium text-gray-700">
-                                              {comprovante.nome_arquivo}
-                                            </span>
-                                            <span className="text-xs text-gray-500">
-                                              {new Date(comprovante.created_at).toLocaleDateString('pt-BR')} às {new Date(comprovante.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                                            </span>
+                                      {comprovantesDaCartinha.map((comprovante, index) => {
+                                        console.log(`Renderizando comprovante ${index}:`, comprovante);
+                                        
+                                        return (
+                                          <div key={comprovante.id} className="border border-pink-200 rounded-lg p-4">
+                                            <div className="flex items-center justify-between mb-2">
+                                              <span className="text-sm font-medium text-gray-700">
+                                                {comprovante.nome_arquivo}
+                                              </span>
+                                              <span className="text-xs text-gray-500">
+                                                {new Date(comprovante.created_at).toLocaleDateString('pt-BR')} às {new Date(comprovante.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                              </span>
+                                            </div>
+                                            <div className="relative">
+                                              <img 
+                                                src={comprovante.arquivo_url} 
+                                                alt={comprovante.nome_arquivo}
+                                                className="w-full max-h-64 object-contain border border-gray-200 rounded bg-gray-50"
+                                                loading="lazy"
+                                                onLoad={() => {
+                                                  console.log('Imagem carregada com sucesso:', comprovante.arquivo_url);
+                                                }}
+                                                onError={(e) => {
+                                                  console.error('Erro ao carregar imagem:', comprovante.arquivo_url);
+                                                  const target = e.currentTarget as HTMLImageElement;
+                                                  target.style.display = 'none';
+                                                  const errorDiv = document.createElement('div');
+                                                  errorDiv.className = 'w-full h-32 flex items-center justify-center bg-gray-100 border border-gray-200 rounded text-gray-500 text-sm';
+                                                  errorDiv.textContent = 'Erro ao carregar imagem';
+                                                  target.parentNode?.insertBefore(errorDiv, target);
+                                                }}
+                                              />
+                                            </div>
+                                            {comprovante.tamanho_arquivo && (
+                                              <p className="text-xs text-gray-500 mt-2">
+                                                Tamanho: {(comprovante.tamanho_arquivo / 1024 / 1024).toFixed(2)} MB
+                                              </p>
+                                            )}
                                           </div>
-                                          <div className="relative">
-                                            <img 
-                                              src={comprovante.arquivo_url} 
-                                              alt={comprovante.nome_arquivo}
-                                              className="w-full max-h-64 object-contain border border-gray-200 rounded bg-gray-50"
-                                              loading="lazy"
-                                              onError={(e) => {
-                                                console.error('Erro ao carregar imagem:', comprovante.arquivo_url);
-                                                const target = e.currentTarget as HTMLImageElement;
-                                                target.style.display = 'none';
-                                                const errorDiv = document.createElement('div');
-                                                errorDiv.className = 'w-full h-32 flex items-center justify-center bg-gray-100 border border-gray-200 rounded text-gray-500 text-sm';
-                                                errorDiv.textContent = 'Erro ao carregar imagem';
-                                                target.parentNode?.insertBefore(errorDiv, target);
-                                              }}
-                                            />
-                                          </div>
-                                          {comprovante.tamanho_arquivo && (
-                                            <p className="text-xs text-gray-500 mt-2">
-                                              Tamanho: {(comprovante.tamanho_arquivo / 1024 / 1024).toFixed(2)} MB
-                                            </p>
-                                          )}
-                                        </div>
-                                      ))}
+                                        );
+                                      })}
                                     </div>
                                   </DialogContent>
                                 </Dialog>

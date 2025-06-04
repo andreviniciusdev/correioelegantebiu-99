@@ -51,24 +51,35 @@ export const useUploadComprovante = () => {
 
   return useMutation({
     mutationFn: async ({ file, cartinhaId }: { file: File; cartinhaId: string }) => {
+      console.log('Iniciando upload do comprovante:', { fileName: file.name, cartinhaId });
+      
       // 1. Upload do arquivo para o Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `${cartinhaId}/${fileName}`;
 
+      console.log('Caminho do arquivo:', filePath);
+
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('comprovantes')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) {
         console.error('Erro no upload:', uploadError);
         throw uploadError;
       }
 
+      console.log('Upload realizado com sucesso:', uploadData);
+
       // 2. Obter URL pública do arquivo
       const { data: urlData } = supabase.storage
         .from('comprovantes')
         .getPublicUrl(filePath);
+
+      console.log('URL pública gerada:', urlData.publicUrl);
 
       // 3. Salvar registro na tabela comprovantes
       const comprovanteData: CreateComprovanteData = {
@@ -78,6 +89,8 @@ export const useUploadComprovante = () => {
         tamanho_arquivo: file.size,
         tipo_arquivo: file.type,
       };
+
+      console.log('Salvando dados do comprovante:', comprovanteData);
 
       const { data, error } = await supabase
         .from('comprovantes')
@@ -90,6 +103,7 @@ export const useUploadComprovante = () => {
         throw error;
       }
 
+      console.log('Comprovante salvo com sucesso:', data);
       return data as ComprovanteSupabase;
     },
     onSuccess: () => {
