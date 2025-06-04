@@ -5,16 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Upload, Check, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { useUploadComprovante } from '@/hooks/useSupabaseCartinhas';
+import { useCreateCartinha } from '@/hooks/useSupabaseCartinhas';
+import { CreateCartinhaData } from '@/hooks/useSupabaseCartinhas';
 
 interface ComprovanteUploadProps {
   cartinhaId: string;
   onUploadSuccess?: () => void;
+  cartinhaData?: CreateCartinhaData;
 }
 
-const ComprovanteUpload = ({ cartinhaId, onUploadSuccess }: ComprovanteUploadProps) => {
+const ComprovanteUpload = ({ cartinhaId, onUploadSuccess, cartinhaData }: ComprovanteUploadProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const uploadComprovante = useUploadComprovante();
+  const [isUploading, setIsUploading] = useState(false);
+  const createCartinha = useCreateCartinha();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -44,17 +47,41 @@ const ComprovanteUpload = ({ cartinhaId, onUploadSuccess }: ComprovanteUploadPro
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || !cartinhaData) return;
     
-    uploadComprovante.mutate(
-      { file: selectedFile, cartinhaId },
-      {
-        onSuccess: () => {
+    setIsUploading(true);
+    
+    try {
+      // Primeiro criar a cartinha no banco com os dados do comprovante
+      const cartinhaComComprovante = {
+        ...cartinhaData,
+        comprovante_nome: selectedFile.name,
+        comprovante_tamanho: selectedFile.size,
+        comprovante_tipo: selectedFile.type,
+      };
+
+      createCartinha.mutate(cartinhaComComprovante, {
+        onSuccess: (cartinhaCriada) => {
+          toast({
+            title: "Comprovante enviado! 📎",
+            description: "Seu comprovante foi recebido e o pedido foi enviado aos administradores.",
+          });
           setSelectedFile(null);
           onUploadSuccess?.();
+        },
+        onError: () => {
+          setIsUploading(false);
         }
-      }
-    );
+      });
+    } catch (error) {
+      console.error('Erro ao enviar comprovante:', error);
+      toast({
+        title: "Erro ao enviar comprovante",
+        description: "Tente novamente em alguns instantes.",
+        variant: "destructive",
+      });
+      setIsUploading(false);
+    }
   };
 
   const removeFile = () => {
@@ -100,6 +127,7 @@ const ComprovanteUpload = ({ cartinhaId, onUploadSuccess }: ComprovanteUploadPro
                 variant="ghost"
                 size="sm"
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                disabled={isUploading}
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -107,10 +135,10 @@ const ComprovanteUpload = ({ cartinhaId, onUploadSuccess }: ComprovanteUploadPro
             
             <Button
               onClick={handleUpload}
-              disabled={uploadComprovante.isPending}
+              disabled={isUploading || createCartinha.isPending}
               className="w-full bg-pink-500 hover:bg-pink-600 text-white"
             >
-              {uploadComprovante.isPending ? (
+              {isUploading || createCartinha.isPending ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   Enviando...

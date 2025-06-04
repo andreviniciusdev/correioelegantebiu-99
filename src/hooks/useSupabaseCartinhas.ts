@@ -29,6 +29,9 @@ export interface CreateCartinhaData {
   mensagem: string;
   combo: 'combo1' | 'combo2';
   valor: number;
+  comprovante_nome?: string;
+  comprovante_tamanho?: number;
+  comprovante_tipo?: string;
 }
 
 export interface UploadComprovanteData {
@@ -65,12 +68,15 @@ export const useCreateCartinha = () => {
 
   return useMutation({
     mutationFn: async (cartinhaData: CreateCartinhaData) => {
+      const dataToInsert = {
+        ...cartinhaData,
+        data_envio: new Date().toISOString(),
+        comprovante_enviado_at: cartinhaData.comprovante_nome ? new Date().toISOString() : null,
+      };
+
       const { data, error } = await supabase
         .from('cartinhas')
-        .insert([{
-          ...cartinhaData,
-          data_envio: new Date().toISOString(),
-        }])
+        .insert([dataToInsert])
         .select()
         .single();
 
@@ -83,10 +89,6 @@ export const useCreateCartinha = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cartinhas'] });
-      toast({
-        title: "Cartinha criada com sucesso! 💌",
-        description: "Sua cartinha foi registrada e será entregue no dia do evento.",
-      });
     },
     onError: (error) => {
       console.error('Erro ao criar cartinha:', error);

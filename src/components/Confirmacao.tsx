@@ -14,15 +14,17 @@ const Confirmacao = () => {
   const navigate = useNavigate();
   const { currentCartinha, clearCurrentCartinha } = useCorreioStore();
   const createCartinha = useCreateCartinha();
-  const [cartinhaId, setCartinhaId] = useState<string | null>(null);
+  const [comprovanteEnviado, setComprovanteEnviado] = useState(false);
 
   useEffect(() => {
     if (!currentCartinha.remetente || !currentCartinha.combo) {
       navigate('/');
       return;
     }
+  }, []);
 
-    // Salvar a cartinha no banco de dados do Supabase
+  const handleComprovanteSuccess = () => {
+    // Agora que o comprovante foi enviado, criar a cartinha no banco
     const cartinhaData = {
       remetente: currentCartinha.remetente!,
       destinatario: currentCartinha.destinatario!,
@@ -33,11 +35,15 @@ const Confirmacao = () => {
     };
 
     createCartinha.mutate(cartinhaData, {
-      onSuccess: (data) => {
-        setCartinhaId(data.id);
+      onSuccess: () => {
+        setComprovanteEnviado(true);
+        toast({
+          title: "Pedido enviado aos administradores! 📨",
+          description: "Seu pedido foi registrado e será processado em breve.",
+        });
       }
     });
-  }, []);
+  };
 
   const handleNovaCartinha = () => {
     clearCurrentCartinha();
@@ -84,10 +90,13 @@ const Confirmacao = () => {
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             <CardTitle className="text-3xl text-gradient-pink mb-2">
-              Pedido Confirmado! 🎉
+              {comprovanteEnviado ? 'Pedido Enviado! 🎉' : 'Pedido Preparado! 📝'}
             </CardTitle>
             <p className="text-gray-600">
-              Sua cartinha foi registrada com sucesso
+              {comprovanteEnviado 
+                ? 'Seu pedido foi enviado aos administradores e será processado em breve'
+                : 'Revise os dados e envie o comprovante para finalizar'
+              }
             </p>
           </CardHeader>
           
@@ -135,7 +144,7 @@ const Confirmacao = () => {
               </div>
             </div>
 
-            {selectedCombo?.qrCode && (
+            {!comprovanteEnviado && selectedCombo?.qrCode && (
               <div className="bg-white p-6 rounded-lg border border-pink-200 text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <QrCode className="w-5 h-5 text-pink-600" />
@@ -181,14 +190,37 @@ const Confirmacao = () => {
               </div>
             )}
 
-            {cartinhaId && (
-              <ComprovanteUpload cartinhaId={cartinhaId} />
+            {!comprovanteEnviado && (
+              <ComprovanteUpload 
+                cartinhaId="temp" 
+                onUploadSuccess={handleComprovanteSuccess}
+                cartinhaData={{
+                  remetente: currentCartinha.remetente!,
+                  destinatario: currentCartinha.destinatario!,
+                  serie: currentCartinha.serie!,
+                  mensagem: currentCartinha.mensagem!,
+                  combo: currentCartinha.combo!,
+                  valor: currentCartinha.valor!,
+                }}
+              />
+            )}
+
+            {comprovanteEnviado && (
+              <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-6 rounded-lg border border-green-200 text-center">
+                <h3 className="font-semibold text-green-800 mb-2">✅ Comprovante Enviado</h3>
+                <p className="text-green-700">
+                  Seu comprovante foi recebido com sucesso! Seu pedido foi enviado aos administradores.
+                </p>
+              </div>
             )}
 
             <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-lg border border-pink-200 text-center">
               <h3 className="font-semibold text-pink-800 mb-2">💌 Informações Importantes</h3>
               <p className="text-pink-700">
-                Após o pagamento, sua cartinha será entregue no dia do evento. 
+                {comprovanteEnviado 
+                  ? 'Seu pedido será processado em breve. Sua cartinha será entregue no dia do evento!'
+                  : 'Após enviar o comprovante, seu pedido será encaminhado para processamento.'
+                }
                 <br />
                 <strong>Obrigado por participar! 🎉</strong>
               </p>
@@ -197,7 +229,12 @@ const Confirmacao = () => {
             <div className="text-center space-y-4">
               <Button 
                 onClick={handleNovaCartinha}
-                className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 text-lg shadow-pink"
+                disabled={!comprovanteEnviado}
+                className={`w-full py-3 text-lg shadow-pink ${
+                  comprovanteEnviado 
+                    ? 'bg-pink-500 hover:bg-pink-600 text-white' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
                 size="lg"
               >
                 <Home className="w-5 h-5 mr-2" />
@@ -205,7 +242,10 @@ const Confirmacao = () => {
               </Button>
               
               <p className="text-sm text-gray-500">
-                Quer enviar mais cartinhas? Clique no botão acima!
+                {comprovanteEnviado 
+                  ? 'Quer enviar mais cartinhas? Clique no botão acima!'
+                  : 'Envie o comprovante para habilitar o envio de nova cartinha'
+                }
               </p>
             </div>
           </CardContent>
