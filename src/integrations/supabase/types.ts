@@ -12,6 +12,11 @@ export type Database = {
       cartinhas: {
         Row: {
           combo: string
+          comprovante_enviado_at: string | null
+          comprovante_nome: string | null
+          comprovante_tamanho: number | null
+          comprovante_tipo: string | null
+          comprovante_url: string | null
           created_at: string
           data_envio: string
           destinatario: string
@@ -25,6 +30,11 @@ export type Database = {
         }
         Insert: {
           combo: string
+          comprovante_enviado_at?: string | null
+          comprovante_nome?: string | null
+          comprovante_tamanho?: number | null
+          comprovante_tipo?: string | null
+          comprovante_url?: string | null
           created_at?: string
           data_envio?: string
           destinatario: string
@@ -38,6 +48,11 @@ export type Database = {
         }
         Update: {
           combo?: string
+          comprovante_enviado_at?: string | null
+          comprovante_nome?: string | null
+          comprovante_tamanho?: number | null
+          comprovante_tipo?: string | null
+          comprovante_url?: string | null
           created_at?: string
           data_envio?: string
           destinatario?: string
@@ -50,44 +65,6 @@ export type Database = {
           valor?: number
         }
         Relationships: []
-      }
-      comprovantes: {
-        Row: {
-          arquivo_url: string
-          cartinha_id: string | null
-          created_at: string
-          id: string
-          nome_arquivo: string
-          tamanho_arquivo: number | null
-          tipo_arquivo: string | null
-        }
-        Insert: {
-          arquivo_url: string
-          cartinha_id?: string | null
-          created_at?: string
-          id?: string
-          nome_arquivo: string
-          tamanho_arquivo?: number | null
-          tipo_arquivo?: string | null
-        }
-        Update: {
-          arquivo_url?: string
-          cartinha_id?: string | null
-          created_at?: string
-          id?: string
-          nome_arquivo?: string
-          tamanho_arquivo?: number | null
-          tipo_arquivo?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comprovantes_cartinha_id_fkey"
-            columns: ["cartinha_id"]
-            isOneToOne: false
-            referencedRelation: "cartinhas"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {

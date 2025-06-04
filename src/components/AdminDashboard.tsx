@@ -5,8 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
-import { useCartinhas, useCartinhasStats, useUpdateCartinhaStatus } from '@/hooks/useSupabaseCartinhas';
-import { useComprovantes, getStorageUrl } from '@/hooks/useSupabaseComprovantes';
+import { useCartinhas, useCartinhasStats, useUpdateCartinhaStatus, getStorageUrl } from '@/hooks/useSupabaseCartinhas';
 import { toast } from '@/hooks/use-toast';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
 import {
@@ -26,7 +25,6 @@ const AdminDashboard = () => {
   const { logout } = useCorreioStore();
   const { data: cartinhas = [], isLoading } = useCartinhas();
   const { data: stats } = useCartinhasStats();
-  const { data: comprovantes = [] } = useComprovantes();
   const updateStatus = useUpdateCartinhaStatus();
 
   const handleLogout = () => {
@@ -43,7 +41,7 @@ const AdminDashboard = () => {
   };
 
   const exportToCsv = () => {
-    const headers = ['Remetente', 'Destinatário', 'Série', 'Mensagem', 'Combo', 'Valor', 'Status', 'Data'];
+    const headers = ['Remetente', 'Destinatário', 'Série', 'Mensagem', 'Combo', 'Valor', 'Status', 'Data', 'Comprovante'];
     const rows = cartinhas.map(cartinha => [
       cartinha.remetente,
       cartinha.destinatario,
@@ -52,7 +50,8 @@ const AdminDashboard = () => {
       cartinha.combo === 'combo1' ? 'Clássico' : 'Premium',
       `R$ ${Number(cartinha.valor).toFixed(2)}`,
       cartinha.status,
-      new Date(cartinha.data_envio).toLocaleDateString('pt-BR')
+      new Date(cartinha.data_envio).toLocaleDateString('pt-BR'),
+      cartinha.comprovante_url ? 'Sim' : 'Não'
     ]);
 
     const csvContent = [headers, ...rows]
@@ -71,10 +70,6 @@ const AdminDashboard = () => {
     });
   };
 
-  const getComprovantesForCartinha = (cartinhaId: string) => {
-    return comprovantes.filter(comp => comp.cartinha_id === cartinhaId);
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-elegant flex items-center justify-center">
@@ -89,8 +84,8 @@ const AdminDashboard = () => {
     );
   }
 
-  console.log('Comprovantes carregados no dashboard:', comprovantes);
-  console.log('Total de comprovantes:', comprovantes.length);
+  console.log('Cartinhas carregadas no dashboard:', cartinhas);
+  console.log('Total de cartinhas:', cartinhas.length);
 
   return (
     <div className="min-h-screen bg-gradient-elegant">
@@ -238,8 +233,7 @@ const AdminDashboard = () => {
                     </TableHeader>
                     <TableBody>
                       {cartinhas.map((cartinha) => {
-                        const comprovantesDaCartinha = getComprovantesForCartinha(cartinha.id);
-                        console.log(`Comprovantes para cartinha ${cartinha.id}:`, comprovantesDaCartinha);
+                        console.log(`Dados da cartinha ${cartinha.id}:`, cartinha);
                         
                         return (
                           <TableRow key={cartinha.id} className="border-pink-100/50 hover:bg-pink-50/30">
@@ -302,7 +296,7 @@ const AdminDashboard = () => {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {comprovantesDaCartinha.length > 0 ? (
+                              {cartinha.comprovante_url ? (
                                 <Dialog>
                                   <DialogTrigger asChild>
                                     <Button
@@ -311,71 +305,63 @@ const AdminDashboard = () => {
                                       className="border-pink-300 text-pink-600 hover:bg-pink-50"
                                     >
                                       <FileImage className="w-4 h-4 mr-1" />
-                                      Ver ({comprovantesDaCartinha.length})
+                                      Ver
                                     </Button>
                                   </DialogTrigger>
                                   <DialogContent className="max-w-lg">
                                     <DialogHeader>
                                       <DialogTitle className="text-pink-800">
-                                        Comprovantes de Pagamento
+                                        Comprovante de Pagamento
                                       </DialogTitle>
                                       <DialogDescription>
-                                        Comprovantes enviados para esta cartinha.
+                                        Comprovante enviado para esta cartinha.
                                       </DialogDescription>
                                     </DialogHeader>
-                                    <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
-                                      {comprovantesDaCartinha.map((comprovante, index) => {
-                                        console.log(`Renderizando comprovante ${index}:`, comprovante);
-                                        
-                                        // Garantir que temos uma URL válida
-                                        const imageUrl = getStorageUrl(comprovante.arquivo_url) || comprovante.arquivo_url;
-                                        console.log(`URL final para comprovante ${index}:`, imageUrl);
-                                        
-                                        return (
-                                          <div key={comprovante.id} className="border border-pink-200 rounded-lg p-4">
-                                            <div className="flex items-center justify-between mb-2">
-                                              <span className="text-sm font-medium text-gray-700">
-                                                {comprovante.nome_arquivo}
-                                              </span>
-                                              <span className="text-xs text-gray-500">
-                                                {new Date(comprovante.created_at).toLocaleDateString('pt-BR')} às {new Date(comprovante.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                                              </span>
-                                            </div>
-                                            <div className="relative">
-                                              <img 
-                                                src={imageUrl} 
-                                                alt={comprovante.nome_arquivo}
-                                                className="w-full max-h-64 object-contain border border-gray-200 rounded bg-gray-50"
-                                                loading="lazy"
-                                                onLoad={(e) => {
-                                                  console.log('✅ Imagem carregada com sucesso:', imageUrl);
-                                                  console.log('Dimensões da imagem:', e.currentTarget.naturalWidth, 'x', e.currentTarget.naturalHeight);
-                                                }}
-                                                onError={(e) => {
-                                                  console.error('❌ Erro ao carregar imagem:', imageUrl);
-                                                  console.error('Objeto do comprovante:', comprovante);
-                                                  const target = e.currentTarget as HTMLImageElement;
-                                                  target.style.display = 'none';
-                                                  const errorDiv = document.createElement('div');
-                                                  errorDiv.className = 'w-full h-32 flex items-center justify-center bg-red-50 border border-red-200 rounded text-red-600 text-sm';
-                                                  errorDiv.innerHTML = `
-                                                    <div class="text-center">
-                                                      <div>❌ Erro ao carregar imagem</div>
-                                                      <div class="text-xs mt-1">URL: ${imageUrl}</div>
-                                                    </div>
-                                                  `;
-                                                  target.parentNode?.insertBefore(errorDiv, target);
-                                                }}
-                                              />
-                                            </div>
-                                            {comprovante.tamanho_arquivo && (
-                                              <p className="text-xs text-gray-500 mt-2">
-                                                Tamanho: {(comprovante.tamanho_arquivo / 1024 / 1024).toFixed(2)} MB
-                                              </p>
-                                            )}
-                                          </div>
-                                        );
-                                      })}
+                                    <div className="mt-4">
+                                      <div className="border border-pink-200 rounded-lg p-4">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <span className="text-sm font-medium text-gray-700">
+                                            {cartinha.comprovante_nome}
+                                          </span>
+                                          {cartinha.comprovante_enviado_at && (
+                                            <span className="text-xs text-gray-500">
+                                              {new Date(cartinha.comprovante_enviado_at).toLocaleDateString('pt-BR')} às {new Date(cartinha.comprovante_enviado_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                          )}
+                                        </div>
+                                        <div className="relative">
+                                          <img 
+                                            src={getStorageUrl(cartinha.comprovante_url) || cartinha.comprovante_url} 
+                                            alt={cartinha.comprovante_nome || 'Comprovante'}
+                                            className="w-full max-h-64 object-contain border border-gray-200 rounded bg-gray-50"
+                                            loading="lazy"
+                                            onLoad={(e) => {
+                                              console.log('✅ Imagem carregada com sucesso:', cartinha.comprovante_url);
+                                              console.log('Dimensões da imagem:', e.currentTarget.naturalWidth, 'x', e.currentTarget.naturalHeight);
+                                            }}
+                                            onError={(e) => {
+                                              console.error('❌ Erro ao carregar imagem:', cartinha.comprovante_url);
+                                              console.error('Dados da cartinha:', cartinha);
+                                              const target = e.currentTarget as HTMLImageElement;
+                                              target.style.display = 'none';
+                                              const errorDiv = document.createElement('div');
+                                              errorDiv.className = 'w-full h-32 flex items-center justify-center bg-red-50 border border-red-200 rounded text-red-600 text-sm';
+                                              errorDiv.innerHTML = `
+                                                <div class="text-center">
+                                                  <div>❌ Erro ao carregar imagem</div>
+                                                  <div class="text-xs mt-1">URL: ${cartinha.comprovante_url}</div>
+                                                </div>
+                                              `;
+                                              target.parentNode?.insertBefore(errorDiv, target);
+                                            }}
+                                          />
+                                        </div>
+                                        {cartinha.comprovante_tamanho && (
+                                          <p className="text-xs text-gray-500 mt-2">
+                                            Tamanho: {(cartinha.comprovante_tamanho / 1024 / 1024).toFixed(2)} MB
+                                          </p>
+                                        )}
+                                      </div>
                                     </div>
                                   </DialogContent>
                                 </Dialog>

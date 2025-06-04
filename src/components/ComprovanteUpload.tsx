@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Upload, Check, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { useUploadComprovante } from '@/hooks/useSupabaseComprovantes';
+import { useUploadComprovante } from '@/hooks/useSupabaseCartinhas';
 
 interface ComprovanteUploadProps {
   cartinhaId: string;
