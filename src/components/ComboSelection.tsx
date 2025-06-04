@@ -6,10 +6,11 @@ import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useNavigate } from 'react-router-dom';
 import { Gift, Heart, QrCode } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { ADMIN_CONFIG } from '@/config/adminConfig';
 
 const ComboSelection = () => {
   const navigate = useNavigate();
-  const { currentCartinha, updateCurrentCartinha, adminConfig } = useCorreioStore();
+  const { currentCartinha, updateCurrentCartinha } = useCorreioStore();
   const [selectedCombo, setSelectedCombo] = useState<'combo1' | 'combo2' | null>(null);
 
   // Se não há dados da cartinha, redireciona
@@ -22,16 +23,16 @@ const ComboSelection = () => {
     combo1: {
       name: 'Combo Clássico',
       description: 'Cartinha + Envelope',
-      price: 2.50,
+      price: ADMIN_CONFIG.COMBO_PRICES.combo1,
       icon: '💌',
-      qrCode: adminConfig.qrCodeCombo1
+      qrCode: ADMIN_CONFIG.QR_CODES.combo1
     },
     combo2: {
       name: 'Combo Premium',
       description: 'Cartinha + Envelope + Bombom',
-      price: 3.00,
+      price: ADMIN_CONFIG.COMBO_PRICES.combo2,
       icon: '🍫',
-      qrCode: adminConfig.qrCodeCombo2
+      qrCode: ADMIN_CONFIG.QR_CODES.combo2
     }
   };
 

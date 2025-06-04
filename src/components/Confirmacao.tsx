@@ -6,10 +6,11 @@ import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useCreateCartinha } from '@/hooks/useSupabaseCartinhas';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Heart, Home, QrCode } from 'lucide-react';
+import { ADMIN_CONFIG } from '@/config/adminConfig';
 
 const Confirmacao = () => {
   const navigate = useNavigate();
-  const { currentCartinha, clearCurrentCartinha, adminConfig } = useCorreioStore();
+  const { currentCartinha, clearCurrentCartinha } = useCorreioStore();
   const createCartinha = useCreateCartinha();
 
   useEffect(() => {
@@ -37,8 +38,8 @@ const Confirmacao = () => {
   };
 
   const combos = {
-    combo1: { name: 'Combo Clássico', qrCode: adminConfig.qrCodeCombo1 },
-    combo2: { name: 'Combo Premium', qrCode: adminConfig.qrCodeCombo2 }
+    combo1: { name: 'Combo Clássico', qrCode: ADMIN_CONFIG.QR_CODES.combo1 },
+    combo2: { name: 'Combo Premium', qrCode: ADMIN_CONFIG.QR_CODES.combo2 }
   };
 
   const selectedCombo = currentCartinha.combo ? combos[currentCartinha.combo] : null;
