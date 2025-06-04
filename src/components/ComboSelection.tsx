@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useNavigate } from 'react-router-dom';
-import { Gift, Heart, QrCode } from 'lucide-react';
+import { Gift, Heart, QrCode, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
 
@@ -25,14 +25,16 @@ const ComboSelection = () => {
       description: 'Cartinha + Envelope',
       price: ADMIN_CONFIG.COMBO_PRICES.combo1,
       icon: '💌',
-      qrCode: ADMIN_CONFIG.QR_CODES.combo1
+      qrCode: ADMIN_CONFIG.QR_CODES.combo1,
+      paymentLink: ADMIN_CONFIG.PAYMENT_LINKS.combo1
     },
     combo2: {
       name: 'Combo Premium',
       description: 'Cartinha + Envelope + Bombom',
       price: ADMIN_CONFIG.COMBO_PRICES.combo2,
       icon: '🍫',
-      qrCode: ADMIN_CONFIG.QR_CODES.combo2
+      qrCode: ADMIN_CONFIG.QR_CODES.combo2,
+      paymentLink: ADMIN_CONFIG.PAYMENT_LINKS.combo2
     }
   };
 
@@ -118,7 +120,7 @@ const ComboSelection = () => {
               </p>
             </CardHeader>
             
-            <CardContent className="text-center">
+            <CardContent className="text-center space-y-4">
               <img 
                 src={combos[selectedCombo].qrCode} 
                 alt="QR Code para pagamento" 
@@ -135,6 +137,22 @@ const ComboSelection = () => {
               <div style={{display: 'none'}} className="text-gray-500 py-8">
                 QR Code não disponível
               </div>
+              
+              {combos[selectedCombo].paymentLink && (
+                <div className="pt-4">
+                  <p className="text-sm text-gray-600 mb-3">
+                    Ou clique no link abaixo para pagar direto do celular:
+                  </p>
+                  <Button
+                    onClick={() => window.open(combos[selectedCombo].paymentLink, '_blank')}
+                    variant="outline"
+                    className="border-pink-300 text-pink-600 hover:bg-pink-50"
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Abrir Link de Pagamento
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

@@ -1,12 +1,12 @@
-
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useCreateCartinha } from '@/hooks/useSupabaseCartinhas';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Heart, Home, QrCode } from 'lucide-react';
+import { CheckCircle, Heart, Home, QrCode, ExternalLink } from 'lucide-react';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
+import ComprovanteUpload from './ComprovanteUpload';
 
 const Confirmacao = () => {
   const navigate = useNavigate();
@@ -38,11 +38,24 @@ const Confirmacao = () => {
   };
 
   const combos = {
-    combo1: { name: 'Combo Clássico', qrCode: ADMIN_CONFIG.QR_CODES.combo1 },
-    combo2: { name: 'Combo Premium', qrCode: ADMIN_CONFIG.QR_CODES.combo2 }
+    combo1: { 
+      name: 'Combo Clássico', 
+      qrCode: ADMIN_CONFIG.QR_CODES.combo1,
+      paymentLink: ADMIN_CONFIG.PAYMENT_LINKS.combo1
+    },
+    combo2: { 
+      name: 'Combo Premium', 
+      qrCode: ADMIN_CONFIG.QR_CODES.combo2,
+      paymentLink: ADMIN_CONFIG.PAYMENT_LINKS.combo2
+    }
   };
 
   const selectedCombo = currentCartinha.combo ? combos[currentCartinha.combo] : null;
+
+  const handleComprovanteUpload = (file: File) => {
+    console.log('Comprovante enviado:', file.name);
+    // Aqui você pode implementar a lógica para salvar no banco de dados
+  };
 
   return (
     <div className="min-h-screen bg-gradient-pink py-8">
@@ -113,7 +126,7 @@ const Confirmacao = () => {
                 <img 
                   src={selectedCombo.qrCode} 
                   alt="QR Code para pagamento" 
-                  className="mx-auto max-w-48 max-h-48 border border-gray-200 rounded"
+                  className="mx-auto max-w-48 max-h-48 border border-gray-200 rounded mb-4"
                   onError={(e) => {
                     const target = e.currentTarget as HTMLImageElement;
                     target.style.display = 'none';
@@ -126,8 +139,26 @@ const Confirmacao = () => {
                 <div style={{display: 'none'}} className="text-gray-500 py-8">
                   QR Code não disponível
                 </div>
+                
+                {selectedCombo.paymentLink && (
+                  <div className="pt-4">
+                    <p className="text-sm text-gray-600 mb-3">
+                      Ou clique no link abaixo para pagar direto do celular:
+                    </p>
+                    <Button
+                      onClick={() => window.open(selectedCombo.paymentLink, '_blank')}
+                      variant="outline"
+                      className="border-pink-300 text-pink-600 hover:bg-pink-50"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Abrir Link de Pagamento
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
+
+            <ComprovanteUpload onUploadSuccess={handleComprovanteUpload} />
 
             <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-lg border border-pink-200 text-center">
               <h3 className="font-semibold text-pink-800 mb-2">💌 Informações Importantes</h3>
