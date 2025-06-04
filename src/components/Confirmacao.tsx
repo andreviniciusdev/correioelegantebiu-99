@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
-import { useCreateCartinha } from '@/hooks/useSupabaseCartinhas';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Heart, Home, QrCode, Copy } from 'lucide-react';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
@@ -13,7 +12,6 @@ import { toast } from '@/hooks/use-toast';
 const Confirmacao = () => {
   const navigate = useNavigate();
   const { currentCartinha, clearCurrentCartinha } = useCorreioStore();
-  const createCartinha = useCreateCartinha();
   const [comprovanteEnviado, setComprovanteEnviado] = useState(false);
 
   useEffect(() => {
@@ -24,24 +22,12 @@ const Confirmacao = () => {
   }, []);
 
   const handleComprovanteSuccess = () => {
-    // Agora que o comprovante foi enviado, criar a cartinha no banco
-    const cartinhaData = {
-      remetente: currentCartinha.remetente!,
-      destinatario: currentCartinha.destinatario!,
-      serie: currentCartinha.serie!,
-      mensagem: currentCartinha.mensagem!,
-      combo: currentCartinha.combo!,
-      valor: currentCartinha.valor!,
-    };
-
-    createCartinha.mutate(cartinhaData, {
-      onSuccess: () => {
-        setComprovanteEnviado(true);
-        toast({
-          title: "Pedido enviado aos administradores! 📨",
-          description: "Seu pedido foi registrado e será processado em breve.",
-        });
-      }
+    // Apenas marcar que o comprovante foi enviado
+    // A cartinha já foi criada no ComprovanteUpload
+    setComprovanteEnviado(true);
+    toast({
+      title: "Pedido enviado aos administradores! 📨",
+      description: "Seu pedido foi registrado e será processado em breve.",
     });
   };
 
