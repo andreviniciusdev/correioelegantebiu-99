@@ -51,6 +51,44 @@ export type Database = {
         }
         Relationships: []
       }
+      comprovantes: {
+        Row: {
+          arquivo_url: string
+          cartinha_id: string | null
+          created_at: string
+          id: string
+          nome_arquivo: string
+          tamanho_arquivo: number | null
+          tipo_arquivo: string | null
+        }
+        Insert: {
+          arquivo_url: string
+          cartinha_id?: string | null
+          created_at?: string
+          id?: string
+          nome_arquivo: string
+          tamanho_arquivo?: number | null
+          tipo_arquivo?: string | null
+        }
+        Update: {
+          arquivo_url?: string
+          cartinha_id?: string | null
+          created_at?: string
+          id?: string
+          nome_arquivo?: string
+          tamanho_arquivo?: number | null
+          tipo_arquivo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comprovantes_cartinha_id_fkey"
+            columns: ["cartinha_id"]
+            isOneToOne: false
+            referencedRelation: "cartinhas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

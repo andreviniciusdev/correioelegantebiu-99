@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useCartinhas, useCartinhasStats, useUpdateCartinhaStatus } from '@/hooks/useSupabaseCartinhas';
+import { useComprovantes } from '@/hooks/useSupabaseComprovantes';
 import { toast } from '@/hooks/use-toast';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
 import {
@@ -17,13 +18,15 @@ import {
   Eye,
   TrendingUp,
   Calendar,
-  Info
+  Info,
+  FileImage
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { logout } = useCorreioStore();
   const { data: cartinhas = [], isLoading } = useCartinhas();
   const { data: stats } = useCartinhasStats();
+  const { data: comprovantes = [] } = useComprovantes();
   const updateStatus = useUpdateCartinhaStatus();
 
   const handleLogout = () => {
@@ -66,6 +69,10 @@ const AdminDashboard = () => {
       title: "Exportação concluída! 📊",
       description: "O arquivo CSV foi baixado com sucesso.",
     });
+  };
+
+  const getComprovantesForCartinha = (cartinhaId: string) => {
+    return comprovantes.filter(comp => comp.cartinha_id === cartinhaId);
   };
 
   if (isLoading) {
@@ -221,86 +228,144 @@ const AdminDashboard = () => {
                         <TableHead className="font-semibold text-pink-700">Combo</TableHead>
                         <TableHead className="font-semibold text-pink-700">Valor</TableHead>
                         <TableHead className="font-semibold text-pink-700">Status</TableHead>
+                        <TableHead className="font-semibold text-pink-700">Comprovante</TableHead>
                         <TableHead className="font-semibold text-pink-700">Data</TableHead>
                         <TableHead className="font-semibold text-pink-700">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {cartinhas.map((cartinha) => (
-                        <TableRow key={cartinha.id} className="border-pink-100/50 hover:bg-pink-50/30">
-                          <TableCell className="font-medium">{cartinha.remetente}</TableCell>
-                          <TableCell>{cartinha.destinatario}</TableCell>
-                          <TableCell>{cartinha.serie}</TableCell>
-                          <TableCell className="max-w-xs">
-                            <div className="flex items-center gap-2">
-                              <span className="truncate" title={cartinha.mensagem}>
-                                {cartinha.mensagem.length > 50
-                                  ? `${cartinha.mensagem.substring(0, 50)}...`
-                                  : cartinha.mensagem
-                                }
-                              </span>
-                              {cartinha.mensagem.length > 50 && (
+                      {cartinhas.map((cartinha) => {
+                        const comprovantesDaCartinha = getComprovantesForCartinha(cartinha.id);
+                        return (
+                          <TableRow key={cartinha.id} className="border-pink-100/50 hover:bg-pink-50/30">
+                            <TableCell className="font-medium">{cartinha.remetente}</TableCell>
+                            <TableCell>{cartinha.destinatario}</TableCell>
+                            <TableCell>{cartinha.serie}</TableCell>
+                            <TableCell className="max-w-xs">
+                              <div className="flex items-center gap-2">
+                                <span className="truncate" title={cartinha.mensagem}>
+                                  {cartinha.mensagem.length > 50
+                                    ? `${cartinha.mensagem.substring(0, 50)}...`
+                                    : cartinha.mensagem
+                                  }
+                                </span>
+                                {cartinha.mensagem.length > 50 && (
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-6 w-6 p-0 text-pink-600 hover:text-pink-800 hover:bg-pink-50"
+                                      >
+                                        <Eye className="w-4 h-4" />
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-md">
+                                      <DialogHeader>
+                                        <DialogTitle className="text-pink-800">
+                                          Mensagem Completa
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                          Visualize a mensagem completa da cartinha enviada.
+                                        </DialogDescription>
+                                      </DialogHeader>
+                                      <div className="mt-4">
+                                        <p className="text-gray-700 leading-relaxed break-words">
+                                          {cartinha.mensagem}
+                                        </p>
+                                        <div className="mt-4 pt-4 border-t border-pink-200 text-sm text-gray-500">
+                                          <p><strong>De:</strong> {cartinha.remetente}</p>
+                                          <p><strong>Para:</strong> {cartinha.destinatario}</p>
+                                          <p><strong>Série:</strong> {cartinha.serie}</p>
+                                        </div>
+                                      </div>
+                                    </DialogContent>
+                                  </Dialog>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {cartinha.combo === 'combo1' ? 'Clássico' : 'Premium'}
+                            </TableCell>
+                            <TableCell>R$ {Number(cartinha.valor).toFixed(2)}</TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={cartinha.status === 'pago' ? 'default' : 'secondary'}
+                                className={cartinha.status === 'pago' ? 'bg-green-500' : 'bg-orange-500'}
+                              >
+                                {cartinha.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {comprovantesDaCartinha.length > 0 ? (
                                 <Dialog>
                                   <DialogTrigger asChild>
                                     <Button
                                       size="sm"
-                                      variant="ghost"
-                                      className="h-6 w-6 p-0 text-pink-600 hover:text-pink-800 hover:bg-pink-50"
+                                      variant="outline"
+                                      className="border-pink-300 text-pink-600 hover:bg-pink-50"
                                     >
-                                      <Eye className="w-4 h-4" />
+                                      <FileImage className="w-4 h-4 mr-1" />
+                                      Ver ({comprovantesDaCartinha.length})
                                     </Button>
                                   </DialogTrigger>
-                                  <DialogContent className="max-w-md">
+                                  <DialogContent className="max-w-lg">
                                     <DialogHeader>
                                       <DialogTitle className="text-pink-800">
-                                        Mensagem Completa
+                                        Comprovantes de Pagamento
                                       </DialogTitle>
                                       <DialogDescription>
-                                        Visualize a mensagem completa da cartinha enviada.
+                                        Comprovantes enviados para esta cartinha.
                                       </DialogDescription>
                                     </DialogHeader>
-                                    <div className="mt-4">
-                                      <p className="text-gray-700 leading-relaxed break-words">
-                                        {cartinha.mensagem}
-                                      </p>
-                                      <div className="mt-4 pt-4 border-t border-pink-200 text-sm text-gray-500">
-                                        <p><strong>De:</strong> {cartinha.remetente}</p>
-                                        <p><strong>Para:</strong> {cartinha.destinatario}</p>
-                                        <p><strong>Série:</strong> {cartinha.serie}</p>
-                                      </div>
+                                    <div className="mt-4 space-y-4">
+                                      {comprovantesDaCartinha.map((comprovante, index) => (
+                                        <div key={comprovante.id} className="border border-pink-200 rounded-lg p-4">
+                                          <div className="flex items-center justify-between mb-2">
+                                            <span className="text-sm font-medium text-gray-700">
+                                              Comprovante {index + 1}
+                                            </span>
+                                            <span className="text-xs text-gray-500">
+                                              {new Date(comprovante.created_at).toLocaleDateString('pt-BR')}
+                                            </span>
+                                          </div>
+                                          <img 
+                                            src={comprovante.arquivo_url} 
+                                            alt={comprovante.nome_arquivo}
+                                            className="w-full max-h-64 object-contain border border-gray-200 rounded"
+                                            onError={(e) => {
+                                              const target = e.currentTarget as HTMLImageElement;
+                                              target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSIjOUNBM0FGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCI+SW1hZ2VtPC90ZXh0Pgo8L3N2Zz4=';
+                                            }}
+                                          />
+                                          <p className="text-xs text-gray-500 mt-2">
+                                            {comprovante.nome_arquivo}
+                                          </p>
+                                        </div>
+                                      ))}
                                     </div>
                                   </DialogContent>
                                 </Dialog>
+                              ) : (
+                                <span className="text-gray-400 text-sm">Nenhum</span>
                               )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {cartinha.combo === 'combo1' ? 'Clássico' : 'Premium'}
-                          </TableCell>
-                          <TableCell>R$ {Number(cartinha.valor).toFixed(2)}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={cartinha.status === 'pago' ? 'default' : 'secondary'}
-                              className={cartinha.status === 'pago' ? 'bg-green-500' : 'bg-orange-500'}
-                            >
-                              {cartinha.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {new Date(cartinha.data_envio).toLocaleDateString('pt-BR')}
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => toggleStatus(cartinha.id, cartinha.status)}
-                              className="border-pink-soft text-pink-700 hover:bg-pink-50"
-                            >
-                              {cartinha.status === 'pendente' ? 'Marcar Pago' : 'Marcar Pendente'}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell>
+                              {new Date(cartinha.data_envio).toLocaleDateString('pt-BR')}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => toggleStatus(cartinha.id, cartinha.status)}
+                                className="border-pink-soft text-pink-700 hover:bg-pink-50"
+                              >
+                                {cartinha.status === 'pendente' ? 'Marcar Pago' : 'Marcar Pendente'}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
 

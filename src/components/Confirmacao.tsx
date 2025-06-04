@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
@@ -14,6 +14,7 @@ const Confirmacao = () => {
   const navigate = useNavigate();
   const { currentCartinha, clearCurrentCartinha } = useCorreioStore();
   const createCartinha = useCreateCartinha();
+  const [cartinhaId, setCartinhaId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!currentCartinha.remetente || !currentCartinha.combo) {
@@ -31,7 +32,11 @@ const Confirmacao = () => {
       valor: currentCartinha.valor!,
     };
 
-    createCartinha.mutate(cartinhaData);
+    createCartinha.mutate(cartinhaData, {
+      onSuccess: (data) => {
+        setCartinhaId(data.id);
+      }
+    });
   }, []);
 
   const handleNovaCartinha = () => {
@@ -68,11 +73,6 @@ const Confirmacao = () => {
         variant: "destructive"
       });
     }
-  };
-
-  const handleComprovanteUpload = (file: File) => {
-    console.log('Comprovante enviado:', file.name);
-    // Aqui você pode implementar a lógica para salvar no banco de dados
   };
 
   return (
@@ -181,7 +181,9 @@ const Confirmacao = () => {
               </div>
             )}
 
-            <ComprovanteUpload onUploadSuccess={handleComprovanteUpload} />
+            {cartinhaId && (
+              <ComprovanteUpload cartinhaId={cartinhaId} />
+            )}
 
             <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-6 rounded-lg border border-pink-200 text-center">
               <h3 className="font-semibold text-pink-800 mb-2">💌 Informações Importantes</h3>

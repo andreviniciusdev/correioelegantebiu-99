@@ -5,14 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Upload, Check, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useUploadComprovante } from '@/hooks/useSupabaseComprovantes';
 
 interface ComprovanteUploadProps {
-  onUploadSuccess?: (file: File) => void;
+  cartinhaId: string;
+  onUploadSuccess?: () => void;
 }
 
-const ComprovanteUpload = ({ onUploadSuccess }: ComprovanteUploadProps) => {
+const ComprovanteUpload = ({ cartinhaId, onUploadSuccess }: ComprovanteUploadProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const uploadComprovante = useUploadComprovante();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -44,27 +46,15 @@ const ComprovanteUpload = ({ onUploadSuccess }: ComprovanteUploadProps) => {
   const handleUpload = async () => {
     if (!selectedFile) return;
     
-    setIsUploading(true);
-    
-    try {
-      // Simular upload - aqui você pode implementar o upload real para o Supabase Storage
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast({
-        title: "Comprovante enviado!",
-        description: "Seu comprovante foi recebido com sucesso.",
-      });
-      
-      onUploadSuccess?.(selectedFile);
-    } catch (error) {
-      toast({
-        title: "Erro no upload",
-        description: "Não foi possível enviar o comprovante. Tente novamente.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsUploading(false);
-    }
+    uploadComprovante.mutate(
+      { file: selectedFile, cartinhaId },
+      {
+        onSuccess: () => {
+          setSelectedFile(null);
+          onUploadSuccess?.();
+        }
+      }
+    );
   };
 
   const removeFile = () => {
@@ -117,10 +107,10 @@ const ComprovanteUpload = ({ onUploadSuccess }: ComprovanteUploadProps) => {
             
             <Button
               onClick={handleUpload}
-              disabled={isUploading}
+              disabled={uploadComprovante.isPending}
               className="w-full bg-pink-500 hover:bg-pink-600 text-white"
             >
-              {isUploading ? (
+              {uploadComprovante.isPending ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   Enviando...
