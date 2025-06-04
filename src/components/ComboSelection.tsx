@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useNavigate } from 'react-router-dom';
-import { Gift, Heart, QrCode, Copy } from 'lucide-react';
+import { Gift, Heart } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
 
@@ -24,17 +24,13 @@ const ComboSelection = () => {
       name: 'Combo Clássico',
       description: 'Cartinha + Envelope',
       price: ADMIN_CONFIG.COMBO_PRICES.combo1,
-      icon: '💌',
-      qrCode: ADMIN_CONFIG.QR_CODES.combo1,
-      pixKey: ADMIN_CONFIG.PIX_KEYS.combo1
+      icon: '💌'
     },
     combo2: {
       name: 'Combo Premium',
       description: 'Cartinha + Envelope + Bombom',
       price: ADMIN_CONFIG.COMBO_PRICES.combo2,
-      icon: '🍫',
-      qrCode: ADMIN_CONFIG.QR_CODES.combo2,
-      pixKey: ADMIN_CONFIG.PIX_KEYS.combo2
+      icon: '🍫'
     }
   };
 
@@ -44,22 +40,6 @@ const ComboSelection = () => {
       combo,
       valor: combos[combo].price
     });
-  };
-
-  const handleCopyPixKey = async (pixKey: string) => {
-    try {
-      await navigator.clipboard.writeText(pixKey);
-      toast({
-        title: "Link de pagamento copiado!",
-        description: "O link de pagamento foi copiado para a área de transferência.",
-      });
-    } catch (error) {
-      toast({
-        title: "Erro ao copiar",
-        description: "Não foi possível copiar a chave PIX. Tente novamente.",
-        variant: "destructive"
-      });
-    }
   };
 
   const handleFinalizarPedido = () => {
@@ -122,62 +102,6 @@ const ComboSelection = () => {
           ))}
         </div>
 
-        {selectedCombo && combos[selectedCombo].qrCode && (
-          <Card className="shadow-pink border-pink-soft mb-8">
-            <CardHeader className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <QrCode className="w-6 h-6 text-pink-600" />
-                <CardTitle className="text-xl text-pink-700">
-                  QR Code para Pagamento
-                </CardTitle>
-              </div>
-              <p className="text-gray-600">
-                Use o QR Code abaixo para realizar o pagamento
-              </p>
-            </CardHeader>
-            
-            <CardContent className="text-center space-y-4">
-              <img 
-                src={combos[selectedCombo].qrCode} 
-                alt="QR Code para pagamento" 
-                className="mx-auto max-w-48 max-h-48 border border-gray-200 rounded"
-                onError={(e) => {
-                  const target = e.currentTarget as HTMLImageElement;
-                  target.style.display = 'none';
-                  const nextElement = target.nextElementSibling as HTMLElement;
-                  if (nextElement) {
-                    nextElement.style.display = 'block';
-                  }
-                }}
-              />
-              <div style={{display: 'none'}} className="text-gray-500 py-8">
-                QR Code não disponível
-              </div>
-              
-              {combos[selectedCombo].pixKey && (
-                <div className="pt-4">
-                  <p className="text-sm text-gray-600 mb-3">
-                    Ou copie o link de pagamento abaixo:
-                  </p>
-                  <div className="bg-gray-50 p-3 rounded border mb-3">
-                    <code className="text-sm text-gray-700 break-all">
-                      {combos[selectedCombo].pixKey}
-                    </code>
-                  </div>
-                  <Button
-                    onClick={() => handleCopyPixKey(combos[selectedCombo].pixKey)}
-                    variant="outline"
-                    className="border-pink-300 text-pink-600 hover:bg-pink-50"
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copiar Link de Pagamento
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
         <div className="text-center">
           <Button 
             onClick={handleFinalizarPedido}
@@ -186,7 +110,7 @@ const ComboSelection = () => {
             size="lg"
           >
             <Gift className="w-5 h-5 mr-2" />
-            Finalizar Pedido
+            Continuar para Pagamento
           </Button>
         </div>
       </div>

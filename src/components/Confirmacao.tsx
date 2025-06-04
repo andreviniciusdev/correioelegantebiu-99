@@ -76,12 +76,12 @@ const Confirmacao = () => {
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             <CardTitle className="text-3xl text-gradient-pink mb-2">
-              {comprovanteEnviado ? 'Pedido Enviado! 🎉' : 'Pedido Preparado! 📝'}
+              {comprovanteEnviado ? 'Pedido Enviado! 🎉' : 'Realize o Pagamento 💳'}
             </CardTitle>
             <p className="text-gray-600">
               {comprovanteEnviado 
                 ? 'Seu pedido foi enviado aos administradores e será processado em breve'
-                : 'Revise os dados e envie o comprovante para finalizar'
+                : 'Revise os dados, realize o pagamento e envie o comprovante'
               }
             </p>
           </CardHeader>
@@ -130,7 +130,7 @@ const Confirmacao = () => {
               </div>
             </div>
 
-            {!comprovanteEnviado && selectedCombo?.qrCode && (
+            {selectedCombo?.qrCode && (
               <div className="bg-white p-6 rounded-lg border border-pink-200 text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <QrCode className="w-5 h-5 text-pink-600" />
@@ -205,7 +205,7 @@ const Confirmacao = () => {
               <p className="text-pink-700">
                 {comprovanteEnviado 
                   ? 'Seu pedido será processado em breve. Sua cartinha será entregue no dia do evento!'
-                  : 'Após enviar o comprovante, seu pedido será encaminhado para processamento.'
+                  : 'Após realizar o pagamento, envie o comprovante para finalizar seu pedido.'
                 }
                 <br />
                 <strong>Obrigado por participar! 🎉</strong>
