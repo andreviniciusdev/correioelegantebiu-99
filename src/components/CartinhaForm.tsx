@@ -70,10 +70,13 @@ const CartinhaForm = () => {
   };
 
   const series = [
-    '1º Ano A', '1º Ano B', '1º Ano C',
-    '2º Ano A', '2º Ano B', '2º Ano C',
-    '3º Ano A', '3º Ano B', '3º Ano C',
-    '6º Ano', '7º Ano', '8º Ano', '9º Ano'
+    '6º Ano A', '6º Ano B', '6º Ano C', '6º Ano D', '6º Ano E',
+    '7º Ano A', '7º Ano B', '7º Ano C', '7º Ano D', '7º Ano E',
+    '8º Ano A', '8º Ano B', '8º Ano C', '8º Ano D', '8º Ano E', '8º Ano F', '8º Ano G',
+    '9º Ano A', '9º Ano B', '9º Ano C', '9º Ano D', '9º Ano E', '9º Ano F', '9º Ano G',
+    '1º Ano A', '1º Ano B', '1º Ano C', '1º Ano D', '1º Ano E', '1º Ano F', '1º Ano G', '1º Ano H', '1º Ano I',
+    '2º Ano A', '2º Ano B', '2º Ano C', '2º Ano D', '2º Ano E', '2º Ano F', '2º Ano G', '2º Ano H',
+    '3º Ano A', '3º Ano B', '3º Ano C', '3º Ano D', '3º Ano E', '3º Ano F', '3º Ano G'
   ];
 
   // Verificação em tempo real se há palavras ofensivas
@@ -85,7 +88,7 @@ const CartinhaForm = () => {
         <Card className="shadow-pink border-pink-soft">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl text-gradient-pink mb-2">
-              Criar sua Cartinha 💌
+              Crie sua Cartinha
             </CardTitle>
             <p className="text-gray-600">
               Envie uma mensagem carinhosa para alguém especial!
@@ -201,10 +204,12 @@ const CartinhaForm = () => {
             <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
               <h4 className="font-medium text-pink-800 mb-2">📝 Observações Importantes:</h4>
               <ul className="text-sm text-pink-700 space-y-1">
-                <li>✅ Use mensagens carinhosas, divertidas e amigáveis</li>
-                <li>🚫 Proibido qualquer tipo de ofensa, palavrão ou conteúdo impróprio</li>
-                <li>💖 Espalhe amor e positividade!</li>
-                <li>🎯 Seja criativo e genuíno em suas palavras</li>
+                <li>🌷 Todas as mensagens serão revisadas pelo NAPED antes da entrega</li>
+                <li>🚫 Não serão permitidas mensagens com conteúdo ofensivo, discriminatório ou de duplo sentido</li>
+                <li>💸 Caso a mensagem seja reprovada, não haverá reembolso do valor pago</li>
+                <li>🎯 É obrigatório identificar claramente para quem a mensagem será enviada (nome completo, turma ou outra referência)</li>
+                <li>🎭 A identidade do remetente será mantida em sigilo</li>
+                <li>💖 Capriche na sua mensagem! Escreva algo doce e amigável para que a pessoa que receber se sinta especial. 🌹</li>
               </ul>
             </div>
 

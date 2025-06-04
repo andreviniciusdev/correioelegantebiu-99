@@ -46,14 +46,17 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-purple-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
         <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-pink-400/20 rounded-full blur-2xl animate-pulse-soft"></div>
       </div>
-      
+
       <Card className="w-full max-w-md shadow-elegant border-0 glass-effect card-hover relative z-10">
         <CardHeader className="text-center pb-8">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center mb-6 relative shadow-soft">
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-400/20 to-purple-400/20 rounded-full animate-pulse-soft"></div>
-            <Shield className="w-10 h-10 text-gradient-pink relative z-10" />
-            <Sparkles className="w-4 h-4 text-purple-500 absolute -top-1 -right-1 animate-pulse" />
+          <div className="mx-auto mb-6">
+            <img
+              src="/logocorreioelegante.png"
+              alt="Logo"
+              className="w-24 h-24 object-contain"
+            />
           </div>
+
           <CardTitle className="text-3xl font-bold text-gradient-pink mb-2">
             Painel Administrativo
           </CardTitle>
@@ -61,7 +64,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
             Acesso restrito para administradores
           </p>
         </CardHeader>
-        
+
         <CardContent className="space-y-6 px-8 pb-8">
           <div className="space-y-3">
             <Label htmlFor="password" className="text-pink-700 font-semibold flex items-center gap-2">
@@ -77,25 +80,18 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="pl-12 py-3 text-lg input-elegant border-0 rounded-xl"
+                className="pl-4 py-3 text-lg input-elegant border-0 rounded-xl"
               />
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={handleLogin}
             className="w-full btn-elegant text-white py-4 text-lg font-semibold rounded-xl border-0"
             disabled={!password.trim()}
           >
             Entrar no Painel
           </Button>
-
-          <div className="text-center text-sm text-gray-500 bg-pink-50/50 p-4 rounded-xl">
-            <p className="font-medium">Senha padrão: admin123</p>
-            <p className="text-xs mt-1">
-              (Pode ser alterada nas configurações)
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

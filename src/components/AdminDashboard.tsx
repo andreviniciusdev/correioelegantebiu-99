@@ -10,12 +10,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useCartinhas, useCartinhasStats, useUpdateCartinhaStatus } from '@/hooks/useSupabaseCartinhas';
 import { toast } from '@/hooks/use-toast';
-import { 
-  LogOut, 
-  Users, 
-  Mail, 
-  DollarSign, 
-  Settings, 
+import {
+  LogOut,
+  Users,
+  Mail,
+  DollarSign,
+  Settings,
   Download,
   CheckCircle,
   XCircle,
@@ -27,16 +27,16 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { 
-    adminConfig, 
-    updateAdminConfig, 
-    logout 
+  const {
+    adminConfig,
+    updateAdminConfig,
+    logout
   } = useCorreioStore();
-  
+
   const { data: cartinhas = [], isLoading } = useCartinhas();
   const { data: stats } = useCartinhasStats();
   const updateStatus = useUpdateCartinhaStatus();
-  
+
   const [config, setConfig] = useState(adminConfig);
 
   const handleUpdateConfig = () => {
@@ -78,7 +78,7 @@ const AdminDashboard = () => {
     link.href = URL.createObjectURL(blob);
     link.download = 'cartinhas_correio_elegante.csv';
     link.click();
-    
+
     toast({
       title: "Exportação concluída! 📊",
       description: "O arquivo CSV foi baixado com sucesso.",
@@ -104,16 +104,20 @@ const AdminDashboard = () => {
       <header className="glass-effect border-b border-pink-200/50 p-6">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-full flex items-center justify-center shadow-elegant">
-              <Sparkles className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 flex items-center justify-center">
+              <img
+                src="/logocorreioelegante.png"
+                alt="Ícone"
+                className="w-12 h-12 object-contain"
+              />
             </div>
-            <h1 className="text-2xl font-bold text-gradient-pink">
+            <h1 className="text-2xl font-bold text-pink-600">
               Painel Administrativo
             </h1>
           </div>
-          <Button 
+          <Button
             onClick={logout}
-            variant="outline" 
+            variant="outline"
             className="border-pink-300 text-pink-700 hover:bg-pink-50 hover:border-pink-400 shadow-soft"
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -125,13 +129,16 @@ const AdminDashboard = () => {
       <div className="container mx-auto px-6 py-8">
         <Tabs defaultValue="dashboard" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/70 backdrop-blur-sm border-0 shadow-soft p-1 rounded-xl">
-            <TabsTrigger value="dashboard" className="rounded-lg font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
+            <TabsTrigger
+              value="dashboard"
+              className="rounded-lg font-semibold data-[state=active]:bg-pink-500 data-[state=active]:text-white"
+            >
               Dashboard
             </TabsTrigger>
-            <TabsTrigger value="cartinhas" className="rounded-lg font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
+            <TabsTrigger value="cartinhas" className="rounded-lg font-semibold data-[state=active]:bg-pink-500 data-[state=active]:text-white">
               Cartinhas
             </TabsTrigger>
-            <TabsTrigger value="configuracoes" className="rounded-lg font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
+            <TabsTrigger value="configuracoes" className="rounded-lg font-semibold data-[state=active]:bg-pink-500 data-[state=active]:text-white">
               Configurações
             </TabsTrigger>
           </TabsList>
@@ -210,7 +217,7 @@ const AdminDashboard = () => {
                     <Mail className="w-5 h-5" />
                     Todas as Cartinhas
                   </CardTitle>
-                  <Button 
+                  <Button
                     onClick={exportToCsv}
                     className="btn-elegant text-white border-0 shadow-soft"
                   >
@@ -244,17 +251,17 @@ const AdminDashboard = () => {
                           <TableCell className="max-w-xs">
                             <div className="flex items-center gap-2">
                               <span className="truncate" title={cartinha.mensagem}>
-                                {cartinha.mensagem.length > 50 
-                                  ? `${cartinha.mensagem.substring(0, 50)}...` 
+                                {cartinha.mensagem.length > 50
+                                  ? `${cartinha.mensagem.substring(0, 50)}...`
                                   : cartinha.mensagem
                                 }
                               </span>
                               {cartinha.mensagem.length > 50 && (
                                 <Dialog>
                                   <DialogTrigger asChild>
-                                    <Button 
-                                      size="sm" 
-                                      variant="ghost" 
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
                                       className="h-6 w-6 p-0 text-pink-600 hover:text-pink-800 hover:bg-pink-50"
                                     >
                                       <Eye className="w-4 h-4" />
@@ -289,7 +296,7 @@ const AdminDashboard = () => {
                           </TableCell>
                           <TableCell>R$ {Number(cartinha.valor).toFixed(2)}</TableCell>
                           <TableCell>
-                            <Badge 
+                            <Badge
                               variant={cartinha.status === 'pago' ? 'default' : 'secondary'}
                               className={cartinha.status === 'pago' ? 'bg-green-500' : 'bg-orange-500'}
                             >
@@ -313,7 +320,7 @@ const AdminDashboard = () => {
                       ))}
                     </TableBody>
                   </Table>
-                  
+
                   {cartinhas.length === 0 && (
                     <div className="text-center py-12">
                       <Mail className="w-16 h-16 text-pink-300 mx-auto mb-4" />
@@ -388,7 +395,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Button 
+              <Button
                 onClick={handleUpdateConfig}
                 className="w-full btn-elegant text-white py-4 text-lg font-semibold rounded-xl border-0 shadow-elegant"
                 size="lg"

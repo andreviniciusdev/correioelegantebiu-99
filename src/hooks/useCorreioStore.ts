@@ -25,7 +25,7 @@ interface CorreioState {
   adminConfig: AdminConfig;
   currentCartinha: Partial<Cartinha>;
   isAuthenticated: boolean;
-  
+
   // Actions
   addCartinha: (cartinha: Omit<Cartinha, 'id' | 'dataEnvio'>) => void;
   updateCartinhaStatus: (id: string, status: 'pendente' | 'pago') => void;
@@ -37,24 +37,65 @@ interface CorreioState {
 }
 
 const palavrasOfensivas = [
-  // Palavrões e termos ofensivos
+  // Palavrões e ofensas diretas
   'caralho', 'porra', 'merda', 'bosta', 'cacete', 'puta', 'viado', 'bicha',
   'cu', 'cuzão', 'fdp', 'filho da puta', 'desgraça', 'desgraçado',
-  'pqp', 'que porra', 'vai se foder', 'vai tomar no cu', 'corno',
-  
+  'pqp', 'que porra', 'vai se foder', 'vai tomar no cu', 'corno', 'boiola',
+
+  // Abreviações e variações
+  'krl', 'crlh', 'crl', 'pqp', 'vsf', 'vtmnc', 'tnc', 'fdp', 'fdm',
+  'tmnc', 'vtnc', 'vtnc', 'pqpp', 'kct', 'ktc', 'crl', 'sfd', 'sfdp',
+
   // Insultos pessoais
-  'idiota', 'burro', 'otário', 'feio', 'estúpido', 'imbecil', 'babaca', 
+  'idiota', 'burro', 'otário', 'feio', 'estúpido', 'imbecil', 'babaca',
   'trouxa', 'lerdo', 'tapado', 'mongolóide', 'retardado', 'cretino',
   'asno', 'jumento', 'besta', 'animal', 'inútil', 'lixo',
   'porcaria', 'nojento', 'fedorento', 'sujo', 'porco', 'gorda',
   'magra', 'feia', 'horrível', 'nojenta', 'ridícula', 'patética',
-  
-  // Termos depreciativos
+
+  // Termos machistas e misóginos
   'vaca', 'cachorra', 'cadela', 'piranha', 'vagabunda', 'safada',
-  'sem vergonha', 'pirralho', 'moleque', 'fedelho', 'peste',
-  
-  // Abreviações e gírias ofensivas
-  'vsf', 'vtmnc', 'tnc', 'tmj', 'mlk', 'fdm', 'cdf'
+  'sem vergonha', 'mal comida', 'mal amada', 'barraqueira',
+
+  // Xenofobia e regionalismos pejorativos
+  'paraíba', 'baianada', 'baiano preguiçoso', 'nordestino de merda', 'favelado',
+
+  // Racismo e termos racistas
+  'macaco', 'preto fedido', 'crioulo', 'neguinho', 'preto safado',
+
+  // Homofobia e transfobia
+  'viadinho', 'boiolinha', 'traveco', 'baitola', 'mariquinha', 'sapatão', 'dyke',
+
+  // Capacitismo
+  'aleijado', 'aleijada', 'defeituoso', 'débil', 'retardado', 'mongol', 'lesado',
+
+  // Idadismo
+  'velho inútil', 'velha chata', 'múmia', 'gaga', 'senil',
+
+  // Gordofobia e aparência
+  'baleia', 'rolha de poço', 'saco de banha', 'frango', 'palito', 'vara', 'esqueleto',
+
+  // Insultos infantis e pejorativos
+  'pirralho', 'moleque', 'fedelho', 'peste', 'marmanjo', 'criança idiota',
+
+  // Expressões pejorativas indiretas
+  'ninguém te suporta', 'ninguém gosta de você', 'sua cara é um lixo', 'te odeio',
+  'você é um erro', 'você é uma vergonha', 'morre', 'suma daqui', 'desaparece',
+
+  // Ofensas disfarçadas
+  'se enxerga', 'olha pra sua cara', 'acorda pra vida', 'você é patético',
+  'vai cuidar da sua vida', 'ninguém liga pra você', 'você fede', 'escória',
+
+  // Variações fonéticas e comumente usadas na internet
+  'carai', 'caray', 'porraa', 'merdaa', 'cuzao', 'crlh', 'krlh', 'kct', 'ktc', 'pqpp',
+  'vsfd', 'vtmn', 'vtnc', 'tmnc', 'vai se ferrar', 'vai pastar', 'vai se lascar', 'vai pro inferno',
+
+  // Com substituição de letras
+  'p*ta', 'p@ta', 'p#ta', 'c*rlho', 'crl#', 'krlh', 'crlh', 'p*qp', 'f*d*p', 'c*z*o',
+  'v*ado', 'v@ado', 'v!ado', 'b1cha', 'b!cha', 'bix@', 'b1xa',
+
+  // Com espaçamentos e quebras
+  'c r l', 'k r l', 'p q p', 'v s f', 't n c', 'v t m n c', 'f d p', 'c u z a o'
 ];
 
 export const verificarPalavrasOfensivas = (texto: string): boolean => {
@@ -66,14 +107,14 @@ export const verificarPalavrasOfensivas = (texto: string): boolean => {
     .replace(/[^a-z\s]/g, ' ') // Remove pontuação e números
     .replace(/\s+/g, ' ') // Remove espaços extras
     .trim();
-  
+
   // Verifica se alguma palavra ofensiva está presente no texto
   return palavrasOfensivas.some(palavra => {
     const palavraLimpa = palavra
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
-    
+
     // Verifica se a palavra aparece como palavra completa ou parte de uma palavra
     const regex = new RegExp(`\\b${palavraLimpa.replace(/\s+/g, '\\s+')}\\b`, 'i');
     return regex.test(textoLimpo) || textoLimpo.includes(palavraLimpa);
@@ -99,7 +140,7 @@ export const useCorreioStore = create<CorreioState>()(
           dataEnvio: new Date().toLocaleDateString('pt-BR'),
           status: 'pendente'
         };
-        
+
         set((state) => ({
           cartinhas: [...state.cartinhas, newCartinha]
         }));

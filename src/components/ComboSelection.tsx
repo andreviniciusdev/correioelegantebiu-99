@@ -61,7 +61,7 @@ const ComboSelection = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gradient-pink mb-2">
-            Escolha seu Combo 🎁
+            Escolha seu Combo
           </h1>
           <p className="text-gray-600">
             Selecione o combo perfeito para sua cartinha especial
