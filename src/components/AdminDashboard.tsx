@@ -89,7 +89,8 @@ const AdminDashboard = () => {
     );
   }
 
-  console.log('Comprovantes carregados:', comprovantes);
+  console.log('Comprovantes carregados no dashboard:', comprovantes);
+  console.log('Total de comprovantes:', comprovantes.length);
 
   return (
     <div className="min-h-screen bg-gradient-elegant">
@@ -328,7 +329,7 @@ const AdminDashboard = () => {
                                         
                                         // Garantir que temos uma URL válida
                                         const imageUrl = getStorageUrl(comprovante.arquivo_url) || comprovante.arquivo_url;
-                                        console.log(`URL processada para comprovante ${index}:`, imageUrl);
+                                        console.log(`URL final para comprovante ${index}:`, imageUrl);
                                         
                                         return (
                                           <div key={comprovante.id} className="border border-pink-200 rounded-lg p-4">
@@ -346,16 +347,23 @@ const AdminDashboard = () => {
                                                 alt={comprovante.nome_arquivo}
                                                 className="w-full max-h-64 object-contain border border-gray-200 rounded bg-gray-50"
                                                 loading="lazy"
-                                                onLoad={() => {
-                                                  console.log('Imagem carregada com sucesso:', imageUrl);
+                                                onLoad={(e) => {
+                                                  console.log('✅ Imagem carregada com sucesso:', imageUrl);
+                                                  console.log('Dimensões da imagem:', e.currentTarget.naturalWidth, 'x', e.currentTarget.naturalHeight);
                                                 }}
                                                 onError={(e) => {
-                                                  console.error('Erro ao carregar imagem:', imageUrl);
+                                                  console.error('❌ Erro ao carregar imagem:', imageUrl);
+                                                  console.error('Objeto do comprovante:', comprovante);
                                                   const target = e.currentTarget as HTMLImageElement;
                                                   target.style.display = 'none';
                                                   const errorDiv = document.createElement('div');
-                                                  errorDiv.className = 'w-full h-32 flex items-center justify-center bg-gray-100 border border-gray-200 rounded text-gray-500 text-sm';
-                                                  errorDiv.textContent = 'Erro ao carregar imagem';
+                                                  errorDiv.className = 'w-full h-32 flex items-center justify-center bg-red-50 border border-red-200 rounded text-red-600 text-sm';
+                                                  errorDiv.innerHTML = `
+                                                    <div class="text-center">
+                                                      <div>❌ Erro ao carregar imagem</div>
+                                                      <div class="text-xs mt-1">URL: ${imageUrl}</div>
+                                                    </div>
+                                                  `;
                                                   target.parentNode?.insertBefore(errorDiv, target);
                                                 }}
                                               />

@@ -74,14 +74,14 @@ export const useUploadComprovante = () => {
 
       console.log('Upload realizado com sucesso:', uploadData);
 
-      // 2. Obter URL pública do arquivo usando getPublicUrl
+      // 2. Obter URL pública do arquivo - agora que o bucket é público
       const { data: urlData } = supabase.storage
         .from('comprovantes')
         .getPublicUrl(filePath);
 
       console.log('URL pública gerada:', urlData.publicUrl);
 
-      // 3. Salvar registro na tabela comprovantes
+      // 3. Salvar registro na tabela comprovantes com a URL pública
       const comprovanteData: CreateComprovanteData = {
         cartinha_id: cartinhaId,
         arquivo_url: urlData.publicUrl,
@@ -124,7 +124,7 @@ export const useUploadComprovante = () => {
   });
 };
 
-// Nova função para obter URL válida do storage
+// Função melhorada para obter URL válida do storage
 export const getStorageUrl = (filePath: string) => {
   if (!filePath) return null;
   
