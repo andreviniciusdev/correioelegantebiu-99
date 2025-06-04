@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,7 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useCartinhas, useCartinhasStats, useUpdateCartinhaStatus } from '@/hooks/useSupabaseCartinhas';
-import { useAdminConfig, useUpdateAdminConfig } from '@/hooks/useAdminConfig';
 import { toast } from '@/hooks/use-toast';
 import {
   LogOut,
@@ -29,35 +27,23 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const { logout } = useCorreioStore();
+  const {
+    adminConfig,
+    updateAdminConfig,
+    logout
+  } = useCorreioStore();
+
   const { data: cartinhas = [], isLoading } = useCartinhas();
   const { data: stats } = useCartinhasStats();
-  const { data: adminConfig, isLoading: configLoading } = useAdminConfig();
   const updateStatus = useUpdateCartinhaStatus();
-  const updateConfig = useUpdateAdminConfig();
 
-  const [localConfig, setLocalConfig] = useState({
-    qrCodeCombo1: '',
-    qrCodeCombo2: '',
-    senha: ''
-  });
-
-  // Atualizar estado local quando dados do banco chegam
-  useEffect(() => {
-    if (adminConfig) {
-      setLocalConfig({
-        qrCodeCombo1: adminConfig.qr_code_combo1 || '',
-        qrCodeCombo2: adminConfig.qr_code_combo2 || '',
-        senha: adminConfig.senha_admin || ''
-      });
-    }
-  }, [adminConfig]);
+  const [config, setConfig] = useState(adminConfig);
 
   const handleUpdateConfig = () => {
-    updateConfig.mutate({
-      qr_code_combo1: localConfig.qrCodeCombo1,
-      qr_code_combo2: localConfig.qrCodeCombo2,
-      senha_admin: localConfig.senha
+    updateAdminConfig(config);
+    toast({
+      title: "Configurações atualizadas! ✨",
+      description: "As alterações foram salvas com sucesso.",
     });
   };
 
@@ -99,7 +85,7 @@ const AdminDashboard = () => {
     });
   };
 
-  if (isLoading || configLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-elegant flex items-center justify-center">
         <div className="text-center">
@@ -364,8 +350,8 @@ const AdminDashboard = () => {
                     <Input
                       id="qrCodeCombo1"
                       placeholder="URL da imagem do QR Code..."
-                      value={localConfig.qrCodeCombo1}
-                      onChange={(e) => setLocalConfig(prev => ({ ...prev, qrCodeCombo1: e.target.value }))}
+                      value={config.qrCodeCombo1}
+                      onChange={(e) => setConfig(prev => ({ ...prev, qrCodeCombo1: e.target.value }))}
                       className="input-elegant border-0 rounded-xl"
                     />
                   </div>
@@ -377,8 +363,8 @@ const AdminDashboard = () => {
                     <Input
                       id="qrCodeCombo2"
                       placeholder="URL da imagem do QR Code..."
-                      value={localConfig.qrCodeCombo2}
-                      onChange={(e) => setLocalConfig(prev => ({ ...prev, qrCodeCombo2: e.target.value }))}
+                      value={config.qrCodeCombo2}
+                      onChange={(e) => setConfig(prev => ({ ...prev, qrCodeCombo2: e.target.value }))}
                       className="input-elegant border-0 rounded-xl"
                     />
                   </div>
@@ -401,8 +387,8 @@ const AdminDashboard = () => {
                       id="senha"
                       type="password"
                       placeholder="Nova senha..."
-                      value={localConfig.senha}
-                      onChange={(e) => setLocalConfig(prev => ({ ...prev, senha: e.target.value }))}
+                      value={config.senha}
+                      onChange={(e) => setConfig(prev => ({ ...prev, senha: e.target.value }))}
                       className="input-elegant border-0 rounded-xl"
                     />
                   </div>
@@ -411,12 +397,11 @@ const AdminDashboard = () => {
 
               <Button
                 onClick={handleUpdateConfig}
-                disabled={updateConfig.isPending}
                 className="w-full btn-elegant text-white py-4 text-lg font-semibold rounded-xl border-0 shadow-elegant"
                 size="lg"
               >
                 <Settings className="w-5 h-5 mr-2" />
-                {updateConfig.isPending ? 'Salvando...' : 'Salvar Configurações'}
+                Salvar Configurações
               </Button>
             </div>
           </TabsContent>

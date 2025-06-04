@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
-import { useAuthenticateAdmin } from '@/hooks/useAdminConfig';
 import { toast } from '@/hooks/use-toast';
 import { Lock, Shield, Sparkles, KeyRound } from 'lucide-react';
 
@@ -16,33 +15,18 @@ interface AdminLoginProps {
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [password, setPassword] = useState('');
   const { authenticate } = useCorreioStore();
-  const authenticateAdmin = useAuthenticateAdmin();
 
-  const handleLogin = async () => {
-    try {
-      const isValid = await authenticateAdmin.mutateAsync(password);
-      
-      if (isValid) {
-        // Usar o método local também para manter compatibilidade
-        authenticate(password);
-        toast({
-          title: "Login realizado com sucesso! ✨",
-          description: "Bem-vindo ao painel administrativo.",
-        });
-        onLogin();
-      } else {
-        toast({
-          title: "Senha incorreta",
-          description: "Por favor, verifique sua senha e tente novamente.",
-          variant: "destructive"
-        });
-        setPassword('');
-      }
-    } catch (error) {
-      console.error('Erro na autenticação:', error);
+  const handleLogin = () => {
+    if (authenticate(password)) {
       toast({
-        title: "Erro na autenticação",
-        description: "Tente novamente em alguns instantes.",
+        title: "Login realizado com sucesso! ✨",
+        description: "Bem-vindo ao painel administrativo.",
+      });
+      onLogin();
+    } else {
+      toast({
+        title: "Senha incorreta",
+        description: "Por favor, verifique sua senha e tente novamente.",
         variant: "destructive"
       });
       setPassword('');
@@ -96,18 +80,17 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="pl-12 py-3 text-lg input-elegant border-0 rounded-xl"
-                disabled={authenticateAdmin.isPending}
+                className="pl-4 py-3 text-lg input-elegant border-0 rounded-xl"
               />
             </div>
           </div>
 
           <Button
             onClick={handleLogin}
-            disabled={!password.trim() || authenticateAdmin.isPending}
             className="w-full btn-elegant text-white py-4 text-lg font-semibold rounded-xl border-0"
+            disabled={!password.trim()}
           >
-            {authenticateAdmin.isPending ? 'Verificando...' : 'Entrar no Painel'}
+            Entrar no Painel
           </Button>
         </CardContent>
       </Card>

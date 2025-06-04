@@ -9,33 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admin_config: {
-        Row: {
-          created_at: string
-          id: string
-          qr_code_combo1: string | null
-          qr_code_combo2: string | null
-          senha_admin: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          qr_code_combo1?: string | null
-          qr_code_combo2?: string | null
-          senha_admin?: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          qr_code_combo1?: string | null
-          qr_code_combo2?: string | null
-          senha_admin?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       cartinhas: {
         Row: {
           combo: string
