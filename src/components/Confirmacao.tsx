@@ -76,11 +76,11 @@ const Confirmacao = () => {
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
             <CardTitle className="text-3xl text-gradient-pink mb-2">
-              {comprovanteEnviado ? 'Pedido Enviado! 🎉' : 'Realize o Pagamento 💳'}
+              {comprovanteEnviado ? 'Pedido Enviado!' : 'Realize o Pagamento'}
             </CardTitle>
             <p className="text-gray-600">
               {comprovanteEnviado 
-                ? 'Seu pedido foi enviado aos administradores e será processado em breve'
+                ? 'Seu pedido foi enviado aos cupidos e será processado em breve'
                 : 'Revise os dados, realize o pagamento e envie o comprovante'
               }
             </p>
