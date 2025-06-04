@@ -74,7 +74,7 @@ export const useUploadComprovante = () => {
 
       console.log('Upload realizado com sucesso:', uploadData);
 
-      // 2. Obter URL pública do arquivo
+      // 2. Obter URL pública do arquivo usando getPublicUrl
       const { data: urlData } = supabase.storage
         .from('comprovantes')
         .getPublicUrl(filePath);
@@ -122,4 +122,21 @@ export const useUploadComprovante = () => {
       });
     },
   });
+};
+
+// Nova função para obter URL válida do storage
+export const getStorageUrl = (filePath: string) => {
+  if (!filePath) return null;
+  
+  // Se já é uma URL completa, retorna como está
+  if (filePath.startsWith('http')) {
+    return filePath;
+  }
+  
+  // Se é um caminho do storage, gera a URL pública
+  const { data } = supabase.storage
+    .from('comprovantes')
+    .getPublicUrl(filePath);
+    
+  return data.publicUrl;
 };

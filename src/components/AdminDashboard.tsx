@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useCorreioStore } from '@/hooks/useCorreioStore';
 import { useCartinhas, useCartinhasStats, useUpdateCartinhaStatus } from '@/hooks/useSupabaseCartinhas';
-import { useComprovantes } from '@/hooks/useSupabaseComprovantes';
+import { useComprovantes, getStorageUrl } from '@/hooks/useSupabaseComprovantes';
 import { toast } from '@/hooks/use-toast';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
 import {
@@ -327,6 +326,10 @@ const AdminDashboard = () => {
                                       {comprovantesDaCartinha.map((comprovante, index) => {
                                         console.log(`Renderizando comprovante ${index}:`, comprovante);
                                         
+                                        // Garantir que temos uma URL válida
+                                        const imageUrl = getStorageUrl(comprovante.arquivo_url) || comprovante.arquivo_url;
+                                        console.log(`URL processada para comprovante ${index}:`, imageUrl);
+                                        
                                         return (
                                           <div key={comprovante.id} className="border border-pink-200 rounded-lg p-4">
                                             <div className="flex items-center justify-between mb-2">
@@ -339,15 +342,15 @@ const AdminDashboard = () => {
                                             </div>
                                             <div className="relative">
                                               <img 
-                                                src={comprovante.arquivo_url} 
+                                                src={imageUrl} 
                                                 alt={comprovante.nome_arquivo}
                                                 className="w-full max-h-64 object-contain border border-gray-200 rounded bg-gray-50"
                                                 loading="lazy"
                                                 onLoad={() => {
-                                                  console.log('Imagem carregada com sucesso:', comprovante.arquivo_url);
+                                                  console.log('Imagem carregada com sucesso:', imageUrl);
                                                 }}
                                                 onError={(e) => {
-                                                  console.error('Erro ao carregar imagem:', comprovante.arquivo_url);
+                                                  console.error('Erro ao carregar imagem:', imageUrl);
                                                   const target = e.currentTarget as HTMLImageElement;
                                                   target.style.display = 'none';
                                                   const errorDiv = document.createElement('div');
