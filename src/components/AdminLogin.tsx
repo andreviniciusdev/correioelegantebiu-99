@@ -80,7 +80,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="pl-12 py-3 text-lg input-elegant border-0 rounded-xl"
+                className="pl-4 py-3 text-lg input-elegant border-0 rounded-xl"
               />
             </div>
           </div>
