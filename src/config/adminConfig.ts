@@ -2,7 +2,7 @@
 // Configurações administrativas - edite aqui conforme necessário
 export const ADMIN_CONFIG = {
   // Senha do painel administrativo
-  PASSWORD: 'admin123',
+  PASSWORD: 'sesi2025',
   
   // URLs das imagens dos QR codes
   QR_CODES: {
