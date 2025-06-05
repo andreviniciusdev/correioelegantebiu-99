@@ -172,8 +172,16 @@ export const useCorreioStore = create<CorreioState>()(
       },
 
       authenticate: (password) => {
-        const { adminConfig } = get();
-        if (password === adminConfig.senha || password === ADMIN_CONFIG.PASSWORD) {
+        // Força a atualização da senha no adminConfig para a nova senha
+        const currentConfig = get().adminConfig;
+        if (currentConfig.senha !== ADMIN_CONFIG.PASSWORD) {
+          set((state) => ({
+            adminConfig: { ...state.adminConfig, senha: ADMIN_CONFIG.PASSWORD }
+          }));
+        }
+
+        // Verifica apenas a nova senha
+        if (password === ADMIN_CONFIG.PASSWORD) {
           set({ isAuthenticated: true });
           return true;
         }
@@ -185,7 +193,21 @@ export const useCorreioStore = create<CorreioState>()(
       }
     }),
     {
-      name: 'correio-storage'
+      name: 'correio-storage',
+      version: 1, // Adicionando versão para forçar migração
+      migrate: (persistedState: any, version: number) => {
+        // Migração para garantir que a senha seja sempre a nova
+        if (version === 0) {
+          return {
+            ...persistedState,
+            adminConfig: {
+              ...persistedState.adminConfig,
+              senha: ADMIN_CONFIG.PASSWORD
+            }
+          };
+        }
+        return persistedState;
+      }
     }
   )
 );
