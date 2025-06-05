@@ -1,6 +1,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { ADMIN_CONFIG } from '@/config/adminConfig';
 
 export interface Cartinha {
   id: string;
@@ -128,7 +129,7 @@ export const useCorreioStore = create<CorreioState>()(
       adminConfig: {
         qrCodeCombo1: '',
         qrCodeCombo2: '',
-        senha: 'admin123'
+        senha: ADMIN_CONFIG.PASSWORD
       },
       currentCartinha: {},
       isAuthenticated: false,
@@ -172,7 +173,7 @@ export const useCorreioStore = create<CorreioState>()(
 
       authenticate: (password) => {
         const { adminConfig } = get();
-        if (password === adminConfig.senha) {
+        if (password === adminConfig.senha || password === ADMIN_CONFIG.PASSWORD) {
           set({ isAuthenticated: true });
           return true;
         }
