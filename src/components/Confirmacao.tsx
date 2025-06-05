@@ -26,7 +26,7 @@ const Confirmacao = () => {
     // A cartinha já foi criada no ComprovanteUpload
     setComprovanteEnviado(true);
     toast({
-      title: "Pedido enviado aos administradores! 📨",
+      title: "Pedido enviado aos cupidos! 📨",
       description: "Seu pedido foi registrado e será processado em breve.",
     });
   };
@@ -195,7 +195,7 @@ const Confirmacao = () => {
               <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-6 rounded-lg border border-green-200 text-center">
                 <h3 className="font-semibold text-green-800 mb-2">✅ Comprovante Enviado</h3>
                 <p className="text-green-700">
-                  Seu comprovante foi recebido com sucesso! Seu pedido foi enviado aos administradores.
+                  Seu comprovante foi recebido com sucesso! Seu pedido foi enviado aos cupidos.
                 </p>
               </div>
             )}
