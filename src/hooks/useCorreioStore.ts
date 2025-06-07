@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
@@ -109,6 +108,9 @@ export const verificarPalavrasOfensivas = (texto: string): boolean => {
     .replace(/\s+/g, ' ') // Remove espaços extras
     .trim();
 
+  // Se o texto limpo estiver vazio, não há palavras ofensivas
+  if (!textoLimpo) return false;
+
   // Verifica se alguma palavra ofensiva está presente no texto
   return palavrasOfensivas.some(palavra => {
     const palavraLimpa = palavra
@@ -116,9 +118,20 @@ export const verificarPalavrasOfensivas = (texto: string): boolean => {
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
 
-    // Verifica se a palavra aparece como palavra completa ou parte de uma palavra
-    const regex = new RegExp(`\\b${palavraLimpa.replace(/\s+/g, '\\s+')}\\b`, 'i');
-    return regex.test(textoLimpo) || textoLimpo.includes(palavraLimpa);
+    // Ignora palavras muito curtas (1-2 caracteres) para evitar falsos positivos
+    if (palavraLimpa.length <= 2) {
+      return false;
+    }
+
+    // Para palavras com espaços (frases), verifica se a frase completa está presente
+    if (palavraLimpa.includes(' ')) {
+      const regex = new RegExp(`\\b${palavraLimpa.replace(/\s+/g, '\\s+')}\\b`, 'i');
+      return regex.test(textoLimpo);
+    }
+
+    // Para palavras simples, verifica se aparece como palavra completa
+    const regex = new RegExp(`\\b${palavraLimpa}\\b`, 'i');
+    return regex.test(textoLimpo);
   });
 };
 
