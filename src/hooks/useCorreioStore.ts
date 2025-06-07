@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ADMIN_CONFIG } from '@/config/adminConfig';
@@ -39,7 +40,7 @@ interface CorreioState {
 const palavrasOfensivas = [
   // Palavrões e ofensas diretas
   'caralho', 'porra', 'merda', 'bosta', 'cacete', 'puta', 'viado', 'bicha',
-  'cu', 'cuzão', 'fdp', 'filho da puta', 'desgraça', 'desgraçado',
+  'cuzão', 'fdp', 'filho da puta', 'desgraça', 'desgraçado',
   'pqp', 'que porra', 'vai se foder', 'vai tomar no cu', 'corno', 'boiola',
 
   // Abreviações e variações
@@ -130,8 +131,13 @@ export const verificarPalavrasOfensivas = (texto: string): boolean => {
     }
 
     // Para palavras simples de 3+ caracteres, verifica se aparece como palavra completa
-    const regex = new RegExp(`\\b${palavraLimpa}\\b`, 'i');
-    return regex.test(textoLimpo);
+    // Adiciona verificação extra para garantir que não seja uma letra isolada
+    if (palavraLimpa.length >= 3) {
+      const regex = new RegExp(`\\b${palavraLimpa}\\b`, 'i');
+      return regex.test(textoLimpo);
+    }
+
+    return false;
   });
 };
 
