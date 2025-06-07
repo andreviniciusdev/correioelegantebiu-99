@@ -40,7 +40,7 @@ interface CorreioState {
 const palavrasOfensivas = [
   // Palavrões e ofensas diretas
   'caralho', 'porra', 'merda', 'bosta', 'cacete', 'puta', 'viado', 'bicha',
-  'cuzão', 'fdp', 'filho da puta', 'desgraça', 'desgraçado',
+  'cu', 'cuzão', 'fdp', 'filho da puta', 'desgraça', 'desgraçado',
   'pqp', 'que porra', 'vai se foder', 'vai tomar no cu', 'corno', 'boiola',
 
   // Abreviações e variações
@@ -91,12 +91,29 @@ const palavrasOfensivas = [
   'carai', 'caray', 'porraa', 'merdaa', 'cuzao', 'crlh', 'krlh', 'kct', 'ktc', 'pqpp',
   'vsfd', 'vtmn', 'vtnc', 'tmnc', 'vai se ferrar', 'vai pastar', 'vai se lascar', 'vai pro inferno',
 
-  // Com substituição de letras
-  'p*ta', 'p@ta', 'p#ta', 'c*rlho', 'crl#', 'krlh', 'crlh', 'p*qp', 'f*d*p', 'c*z*o',
-  'v*ado', 'v@ado', 'v!ado', 'b1cha', 'b!cha', 'bix@', 'b1xa',
+  // Novas adições
+  'babaca de marca maior', 'cuzinho', 'pica', 'rola', 'xereca', 'piroca', 'viado safado', 'viado do caralho', 'filho da puta escroto',
+  'pau no cu', 'boceta', 'buceta', 'pentelho', 'chupador de rola', 'mala sem alça',
+  'paspalho', 'tola', 'besta quadrada', 'cabrón', 'escroto', 'nojento de merda',
+  'viado do caralho', 'puta que pariu', 'desgraçado filho da puta', 'vai se fuder',
+  'puta merda', 'cu de gato', 'babaca do caralho', 'filho da puta desgraçado',
+  'corno manso', 'pau no cu do caralho', 'viadão', 'bicha do caralho',
+  'filho da puta do caralho', 'canalha', 'palhaço',
+  'imbecil do caralho', 'miserável', 'vagabundo', 'escroto de merda',
+  'vaca suja', 'cadela vadia', 'cuzão do caralho',
 
-  // Com espaçamentos e quebras
-  'c r l', 'k r l', 'p q p', 'v s f', 't n c', 'v t m n c', 'f d p', 'c u z a o'
+  // Conotação sexual explícita
+  'foder', 'transar', 'pegar', 'enfiar', 'transando', 'secar o cu',
+  'pau na bunda', 'beijar a boca', 'chupar rola', 'chupar pau', 'rolar um rabo',
+  'pau duro', 'bater punheta', 'tirar a buceta', 'encher de porra',
+  'mamar', 'comer', 'encoxar', 'rebolar', 'passar a rola', 'cheirar a buceta',
+  'mamar pau', 'fudendo', 'fudido', 'pegação', 'sacanagem', 'fudido de vez',
+  'bucetinha', 'pirulito', 'pau mole', 'pinto', 'pinto duro', 'bunda mole',
+  'bunda dura', 'bunda', 'cuzinho apertado', 'vagabunda safada', 'caralho duro',
+  'rabão', 'rabo de saia', 'rolinha', 'rolando a rola', 'pau no rabo', 'chupar a buceta',
+  'peidar na cama', 'dar o cu', 'bater uma', 'descer a rola', 'mamar buceta',
+  'dar pra ela', 'tomar no rabo', 'enfiar o pau', 'enfiar a rola', 'pegar a novinha',
+  'pegar a mina', 'rolar um namoro', 'beijar a novinha', 'pegar geral', 'rolo de uma noite',
 ];
 
 export const verificarPalavrasOfensivas = (texto: string): boolean => {
