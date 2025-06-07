@@ -129,7 +129,7 @@ export const verificarPalavrasOfensivas = (texto: string): boolean => {
       return regex.test(textoLimpo);
     }
 
-    // Para palavras simples, verifica se aparece como palavra completa
+    // Para palavras simples de 3+ caracteres, verifica se aparece como palavra completa
     const regex = new RegExp(`\\b${palavraLimpa}\\b`, 'i');
     return regex.test(textoLimpo);
   });
